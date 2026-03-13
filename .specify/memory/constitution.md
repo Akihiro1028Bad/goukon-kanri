@@ -1,7 +1,11 @@
 <!--
 Sync Impact Report
 ===================
-- Version change: N/A → 1.0.0 (initial ratification)
+- Version change: 1.0.0 → 1.0.1 (post-analyze consistency fixes)
+- Modified: Principle IV directory paths aligned with plan.md
+- Modified: Principle III test directory aligned with plan.md
+- Modified: Development Workflow file naming aligned with plan.md
+- Previous version: 1.0.0 (initial ratification)
 - Added principles:
   1. Server Components First
   2. Type Safety
@@ -69,8 +73,9 @@ RED → GREEN → REFACTOR サイクルを厳格に遵守する。
     対象。テスト用 DB (Docker, port 5433) を使用する
   - **E2E テスト (Playwright)**: ユーザーストーリー単位の
     クリティカルパスを対象。ブラウザ操作で検証する
-- テストファイルは `__tests__/` ディレクトリに配置し、
-  `*.test.ts` / `*.test.tsx` の命名規則に従う
+- テストファイルは `tests/` ディレクトリに配置し
+  （`tests/unit/`, `tests/integration/`, `tests/e2e/`）、
+  `*.test.ts` / `*.test.tsx` / `*.spec.ts` の命名規則に従う
 
 ### IV. 3-Layer Architecture
 
@@ -79,12 +84,14 @@ RED → GREEN → REFACTOR サイクルを厳格に遵守する。
 - **データ層** (`src/lib/prisma.ts` + Prisma Schema):
   データベースアクセスを一元管理する。Prisma Client の
   シングルトンパターンを使用する
-- **ビジネスロジック層** (`src/services/`):
-  ドメインロジック・バリデーション・計算を実装する。
+- **ビジネスロジック層** (`src/lib/` + `src/actions/` + `src/queries/`):
+  ドメインロジック・バリデーション・計算を `src/lib/` に実装する。
+  データ変更は Server Actions (`src/actions/`)、
+  データ取得は `src/queries/` で行う。
   フレームワーク非依存とし、純粋な TypeScript 関数で構成する
 - **プレゼンテーション層** (`src/app/` + `src/components/`):
   UI レンダリングとユーザーインタラクションを担当する。
-  Server Actions (`src/app/_actions/`) がビジネスロジック層を呼び出す
+  Server Actions (`src/actions/`) がビジネスロジック層を呼び出す
 - 各層の依存方向: プレゼンテーション → ビジネスロジック → データ層
   （逆方向の依存は禁止）
 
@@ -174,8 +181,8 @@ shadcn/ui + Tailwind CSS 4 でアクセシブルかつ
 
 ### ファイル命名規則
 
-- コンポーネント: PascalCase (`EventForm.tsx`)
-- ユーティリティ・サービス: camelCase (`eventService.ts`)
+- コンポーネント: kebab-case (`event-form.tsx`, `event-table.tsx`)
+- ユーティリティ・サービス: kebab-case (`event-id.ts`, `calculations.ts`)
 - ルートファイル: Next.js 規約に準拠
   (`page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`)
 - テストファイル: `*.test.ts` / `*.test.tsx`
@@ -202,4 +209,4 @@ shadcn/ui + Tailwind CSS 4 でアクセシブルかつ
   - PATCH: 文言修正・明確化
 - 開発時のランタイムガイダンスは `CLAUDE.md` を参照する
 
-**Version**: 1.0.0 | **Ratified**: 2026-03-13 | **Last Amended**: 2026-03-13
+**Version**: 1.0.1 | **Ratified**: 2026-03-13 | **Last Amended**: 2026-03-13

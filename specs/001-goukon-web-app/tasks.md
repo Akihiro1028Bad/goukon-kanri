@@ -68,7 +68,34 @@
 
 - [ ] T019 全ページの空のプレースホルダーを作成する。以下の各ファイルに「ページ名 + 準備中」のみを表示する最小限の Server Component を作成する: `src/app/page.tsx`（ダッシュボード）, `src/app/events/page.tsx`（イベント一覧）, `src/app/events/new/page.tsx`（イベント新規登録）, `src/app/events/[id]/page.tsx`（イベント詳細）, `src/app/events/[id]/edit/page.tsx`（イベント編集）, `src/app/participants/page.tsx`（参加者一覧）, `src/app/reports/page.tsx`（収支レポート）, `src/app/schedule/page.tsx`（スケジュール）。作成後、`npm run dev` で各 URL にアクセスしてページ名が表示されることを確認する
 
-**Checkpoint**: `npm run dev` で全ページにアクセス可能。サイドバーナビゲーションで画面遷移できること。`npm run build` がエラーなく完了すること
+- [ ] T019a [P] Suspense 境界ファイルを作成する。憲章 Principle I に従い、以下のファイルを作成する:
+  - `src/app/loading.tsx`: 共通ローディング UI（shadcn/ui の Skeleton または「読み込み中...」テキスト）を表示する
+  - `src/app/error.tsx`: `"use client"` を指定し、エラーメッセージと「再試行」ボタンを表示する Error Boundary。props として `error: Error` と `reset: () => void` を受け取る
+  - `src/app/not-found.tsx`: 「ページが見つかりません」メッセージとダッシュボードへのリンクを表示する
+  - `src/app/events/loading.tsx`: イベント一覧用のローディング UI
+  - `src/app/events/[id]/loading.tsx`: イベント詳細用のローディング UI
+  - `src/app/events/[id]/not-found.tsx`: 「イベントが見つかりません」メッセージを表示する
+
+- [ ] T019b [P] 各ページに `generateMetadata` を設定する。憲章 Principle I に従い、以下のページに metadata を追加する:
+  - `src/app/layout.tsx`: `metadata` エクスポートでサイトタイトル「合コン管理」とデフォルト description を設定する
+  - `src/app/events/page.tsx`: title「イベント一覧」
+  - `src/app/events/new/page.tsx`: title「イベント新規登録」
+  - `src/app/events/[id]/page.tsx`: `generateMetadata` でイベントIDを含む動的タイトル（例: 「イベント 2025-02-001」）
+  - `src/app/events/[id]/edit/page.tsx`: `generateMetadata` でイベントIDを含む動的タイトル（例: 「イベント編集 2025-02-001」）
+  - `src/app/participants/page.tsx`: title「参加者一覧」
+  - `src/app/reports/page.tsx`: title「収支レポート」
+  - `src/app/schedule/page.tsx`: title「スケジュール」
+
+**Checkpoint**: `npm run dev` で全ページにアクセス可能。サイドバーナビゲーションで画面遷移できること。`npm run build` がエラーなく完了すること。ブラウザのタブに各ページのタイトルが表示されること
+
+### 🔍 Chrome MCP 動作確認
+
+- [ ] T019c Chrome DevTools MCP を使って Phase 2 の動作を確認する。`npm run dev` でアプリを起動した状態で、以下の操作を MCP ツールで実行する:
+  1. `navigate_page` で `http://localhost:3000` にアクセスし、`take_screenshot` でダッシュボードのプレースホルダーが表示されることを確認する
+  2. `click` でサイドバーの「イベント一覧」リンクをクリックし、`/events` に遷移することを確認する。`take_screenshot` で画面をキャプチャする
+  3. 同様にサイドバーの「参加者一覧」「スケジュール」「収支レポート」の各リンクをクリックし、各ページに遷移できることを確認する
+  4. `navigate_page` で存在しないURL（例: `http://localhost:3000/nonexistent`）にアクセスし、not-found ページが表示されることを確認する
+  5. 各ページのブラウザタブタイトルが正しく設定されていることを確認する
 
 ---
 
@@ -136,6 +163,19 @@
 
 **Checkpoint**: イベントの登録・一覧表示・詳細表示・編集・論理削除・復元・フィルタリングが動作すること。`npm run test:run` でユニットテスト（EVID-001〜012, VAL-E001〜017）が全て PASS。統合テスト（INT-E001〜013, INT-Q001〜006）が全て PASS。
 
+### 🔍 Chrome MCP 動作確認
+
+- [ ] T037a [US1] Chrome DevTools MCP を使ってイベント CRUD の動作を確認する。以下の操作を MCP ツールで実行する:
+  1. `navigate_page` で `/events/new` にアクセスする。`take_screenshot` でイベント登録フォームが正しく表示されていることを確認する
+  2. `fill_form` でフォームに以下のテストデータを入力する: 日付=明日、時刻=19:00、会場名=テスト会場A、エリア=渋谷、男性定員=5、女性定員=5、男性参加費=6000、女性参加費=4000、状態=開催予定。`click` で「登録」ボタンをクリックする
+  3. 登録成功後、イベント詳細ページにリダイレクトされることを確認する。`take_screenshot` でイベントID（YYYY-MM-001 形式）が表示されていること、入力データが正しく反映されていることを確認する
+  4. `navigate_page` で `/events` にアクセスする。`take_screenshot` で登録したイベントが一覧テーブルに表示されていることを確認する
+  5. 一覧テーブルのイベントIDリンクを `click` してイベント詳細ページに遷移する。「編集」ボタンを `click` して編集ページに遷移する
+  6. `fill` で会場名を「テスト会場B」に変更し、「更新」ボタンを `click` する。更新後の詳細ページで会場名が変更されていることを `take_screenshot` で確認する
+  7. 「削除」ボタンを `click` し、確認ダイアログが表示されることを確認する。「削除する」を `click` してイベント一覧に戻る
+  8. `take_screenshot` で削除したイベントが一覧から非表示になっていることを確認する。「削除済みを表示」トグルを `click` して ON にし、削除済みイベントが半透明で表示されることを確認する
+  9. フィルタ UI の年度・月・状態セレクターを操作し、フィルタが正しく動作することを確認する
+
 ---
 
 ## Phase 4: User Story 2 — 参加者登録・決済管理 (Priority: P2)
@@ -154,7 +194,7 @@
 
 ### TDD Step 2: ビジネスロジック実装（GREEN）
 
-- [ ] T040 [US2] 収支計算ロジック `src/lib/calculations.ts` を実装する。data-model.md の「計算ロジックの実装場所」セクションの実装をそのまま使用する。`calculateEventFinancials()` 関数を実装する。**重要なルール**: (1) 見込み収入はイベントの男女別標準参加費 × 人数で計算する（参加者の個別参加費は使わない） (2) 決済済み収入は決済済み参加者の個別参加費の合計 (3) 論理削除された参加者は除外する (4) 見込み収入が 0 の場合は利益率を null にする（ゼロ除算回避） (5) 利益率は小数第 2 位まで（Math.round で 10000 倍して割る）。実装後、`npm run test:run tests/unit/calculations.test.ts` で CALC-001〜012 の全 12 テストが PASS になることを確認する
+- [ ] T040 [US2] 収支計算ロジック `src/lib/calculations.ts` を実装する。data-model.md の「計算ロジックの実装場所」セクションの実装を正として使用する（plan.md にも同様のコードがあるが data-model.md を優先する）。`calculateEventFinancials()` 関数を実装する。**重要なルール**: (1) 見込み収入はイベントの男女別標準参加費 × 人数で計算する（参加者の個別参加費は使わない） (2) 決済済み収入は決済済み参加者の個別参加費の合計 (3) 論理削除された参加者は除外する (4) 見込み収入が 0 の場合は利益率を null にする（ゼロ除算回避） (5) 利益率は小数第 2 位まで（Math.round で 10000 倍して割る）。実装後、`npm run test:run tests/unit/calculations.test.ts` で CALC-001〜012 の全 12 テストが PASS になることを確認する
 
 - [ ] T041 [US2] Phase 3 の T025 で作成した `src/queries/event-queries.ts` の `getEvents()` と `getEventDetail()` を更新する。ダミー値を返していた収支サマリー部分を、`calculateEventFinancials()` を呼び出して実際の値を返すように差し替える。参加者データを include して取得し、計算関数に渡す
 
@@ -194,6 +234,17 @@
 
 **Checkpoint**: 参加者の登録・編集・削除・復元が動作すること。決済状況の個別更新・一括更新が動作すること。収支サマリーが自動計算されること。全横断参加者一覧で氏名検索ができること。`npm run test:run` で全ユニットテスト・統合テストが PASS。
 
+### 🔍 Chrome MCP 動作確認
+
+- [ ] T052a [US2] Chrome DevTools MCP を使って参加者・決済管理の動作を確認する。以下の操作を MCP ツールで実行する:
+  1. `navigate_page` で Phase 3 で作成したイベントの詳細ページ（`/events/[id]`）にアクセスする。`take_screenshot` でイベント詳細と空の参加者一覧が表示されていることを確認する
+  2. 「参加者追加」ボタンを `click` し、参加者登録フォームが表示されることを確認する。`fill_form` で以下を入力: 氏名=テスト太郎、性別=男性、参加費=6000、決済状況=未。登録ボタンを `click` する
+  3. 同様に 2 名目を登録する: 氏名=テスト花子、性別=女性、参加費=4000、決済状況=未。`take_screenshot` で参加者一覧に 2 名が表示され、収支サマリー（見込み収入・未回収等）が自動計算されていることを確認する
+  4. テスト太郎の決済状況セルを `click` して「済」に切り替える。決済日と確認者名を入力する。`take_screenshot` で決済済み収入・実現利益が更新されていることを確認する
+  5. 一括決済ボタンを `click` し、テスト花子をチェックボックスで選択して一括更新する。`take_screenshot` で全員が決済済みになり、未回収が 0 になっていることを確認する
+  6. `navigate_page` で `/participants` にアクセスする。`take_screenshot` で横断参加者一覧にテスト太郎・テスト花子が表示されていることを確認する
+  7. 氏名検索フィールドに `fill` で「太郎」を入力し、テスト太郎のみが絞り込まれることを確認する
+
 ---
 
 ## Phase 5: User Story 3 — ダッシュボード (Priority: P3)
@@ -210,7 +261,7 @@
 
 ### TDD Step 2: クエリ実装（GREEN）
 
-- [ ] T054 [US3] ダッシュボード集計クエリ `src/queries/dashboard-queries.ts` を実装する。contracts/api.md の「ダッシュボード関連」セクションの契約に従う。`getMonthlySummary(year: number)` 関数を実装する。処理フロー: (1) 指定年の全イベント（論理削除除く）を Prisma で取得（participants を include） (2) 月別にグループ化（1〜12 月） (3) 各月のイベントに対して calculateEventFinancials() で収支を計算 (4) 月別に集計（eventCount, maleCount, femaleCount, venueCost, expectedRevenue, paidRevenue, uncollected, expectedProfit, actualProfit, profitRate, matchCount） (5) イベント 0 件の月は全て 0、profitRate は null として 12 行を返す。実装後、統合テストが PASS することを確認する
+- [ ] T054 [US3] ダッシュボード集計クエリ `src/queries/dashboard-queries.ts` を実装する。contracts/api.md の「ダッシュボード関連」セクションの契約に従う。`getMonthlySummary(year: number)` 関数を実装する。処理フロー: (1) 指定年の全イベント（論理削除除く）を Prisma で取得（participants を include） (2) 月別にグループ化（1〜12 月） (3) 各月のイベントに対して calculateEventFinancials() で収支を計算 (4) 月別に集計（eventCount, maleCount, femaleCount, venueCost（当月イベントの会場費合算）, expectedRevenue, paidRevenue, uncollected, expectedProfit, actualProfit, profitRate（月全体の見込み利益÷見込み収入×100、見込み収入0なら null）, matchCount（当月イベントの matchCount 合算）） (5) イベント 0 件の月は全て 0、profitRate は null として 12 行を返す。実装後、統合テストが PASS することを確認する
 
 ### TDD Step 3: UI コンポーネント実装
 
@@ -221,6 +272,15 @@
 - [ ] T057 [US3] ダッシュボードページ `src/app/page.tsx` を実装する。Server Component として実装する。URL クエリパラメータから `year`（デフォルト: 現在年）を取得する。`getMonthlySummary(year)` でデータを取得する。ページタイトル「ダッシュボード」、`<YearSelector>` と `<MonthlySummaryTable>` を配置する
 
 **Checkpoint**: ダッシュボードに月別サマリーが表示されること。年度切替で表示が更新されること。月クリックでイベント一覧に遷移すること。`npm run test:run` で全テストが PASS。
+
+### 🔍 Chrome MCP 動作確認
+
+- [ ] T057a [US3] Chrome DevTools MCP を使ってダッシュボードの動作を確認する。以下の操作を MCP ツールで実行する:
+  1. `navigate_page` で `/`（ダッシュボード）にアクセスする。`take_screenshot` で月別サマリーテーブルが 1 月〜12 月の 12 行表示されていることを確認する
+  2. Phase 3・4 で登録したイベント・参加者のデータが、該当月の行に正しく集計されていることを確認する（イベント数、男女参加者数、見込み収入、決済済み収入、利益率等）
+  3. イベントが 0 件の月の行が全て 0 / "-" で表示されていることを確認する
+  4. 年度セレクターを `click` して別の年度（例: 前年）に切り替える。`take_screenshot` でテーブルが再描画され、選択年度のデータのみ表示されていることを確認する
+  5. 月別サマリーテーブルの月リンク（例: 「3月」）を `click` して `/events?year=YYYY&month=3` に遷移することを確認する。`take_screenshot` でイベント一覧がその月でフィルタされていることを確認する
 
 ---
 
@@ -250,6 +310,15 @@
 
 **Checkpoint**: スケジュール一覧に全イベントが表示され、残枠が正確に計算されること。LINE テキスト生成ボタンからモーダルが開き、テキストがコピーできること。フィルタが動作すること。`npm run test:run` で全テストが PASS。
 
+### 🔍 Chrome MCP 動作確認
+
+- [ ] T062a [US4] Chrome DevTools MCP を使ってスケジュール・LINE テキスト生成の動作を確認する。以下の操作を MCP ツールで実行する:
+  1. `navigate_page` で `/schedule` にアクセスする。`take_screenshot` でスケジュール一覧テーブルが表示され、各イベントの男女別定員・参加者数・残枠が正しく表示されていることを確認する
+  2. 残枠が 0 以下のイベントがあれば、赤字で表示されていることを確認する
+  3. 「LINE テキスト生成」ボタンを `click` する。`take_screenshot` でモーダルが開き、固定フォーマットの募集テキスト（📅 日付、⏰ 時刻、📍 エリア/会場名、👫 定員、💰 参加費、✅ 残枠 等）がプレビュー表示されていることを確認する
+  4. 「コピー」ボタンを `click` し、成功トースト（「クリップボードにコピーしました」）が表示されることを確認する
+  5. モーダルを閉じ、フィルタ（月・エリア・状態）を操作してフィルタが正しく動作することを確認する
+
 ---
 
 ## Phase 7: 収支レポート + 追加機能
@@ -274,6 +343,13 @@
 
 **Checkpoint**: 収支レポートにイベント別収支が表示されること。フィルタが動作すること。
 
+### 🔍 Chrome MCP 動作確認
+
+- [ ] T067a Chrome DevTools MCP を使って収支レポートの動作を確認する。以下の操作を MCP ツールで実行する:
+  1. `navigate_page` で `/reports` にアクセスする。`take_screenshot` で収支レポートテーブルが表示され、イベント別の収支内訳（イベントID・日付・会場費・予定CB・実際CB・見込み収入・決済済み収入・未回収・見込み利益・実現利益・利益率）が表示されていることを確認する
+  2. 金額が `¥` + カンマ区切りで表示されていること、利益率が小数第 1 位まで表示されていること（見込み収入 0 の場合は「-」）を確認する
+  3. 年度セレクター・月セレクターを操作し、フィルタが正しく動作することを確認する
+
 ---
 
 ## Phase 8: Edge Case テスト + E2E テスト
@@ -294,7 +370,7 @@
 
 - [ ] T072 [P] 参加者・決済 E2E テスト `tests/e2e/participant-payment.spec.ts` を作成する。test-cases.md セクション 3.2 の E2E-010〜E2E-014 の全 5 ケースを実装する
 
-- [ ] T073 [P] ダッシュボード E2E テスト `tests/e2e/dashboard.spec.ts` を作成する。test-cases.md セクション 3.3 の E2E-020〜E2E-022 の全 3 ケースを実装する
+- [ ] T073 [P] ダッシュボード E2E テスト `tests/e2e/dashboard.spec.ts` を作成する。test-cases.md セクション 3.3 の E2E-020〜E2E-022 の全 3 ケースを実装する。**追加ケース**: イベント詳細画面で状態を「開催予定」→「開催済」に変更した後、ダッシュボードに戻り月別サマリーの集計値が即座に反映されていることを検証する（US1-AC2 カバレッジ）
 
 - [ ] T074 [P] スケジュール・LINE テキスト E2E テスト `tests/e2e/schedule-line.spec.ts` を作成する。test-cases.md セクション 3.4 の E2E-030〜E2E-032 の全 3 ケースを実装する
 
@@ -325,6 +401,22 @@
 - [ ] T080 `.gitignore` を確認・更新する。以下が含まれていることを確認: `node_modules/`, `.env`, `.next/`, `prisma/*.db`, `test-results/`, `playwright-report/`。`.env.example` は Git に含める
 
 - [ ] T081 quickstart.md の手順に従い、開発環境の構築手順が正常に完了することを検証する。README 的なドキュメントとして quickstart.md が最新であることを確認する
+
+### 🔍 Chrome MCP 最終動作確認
+
+- [ ] T081a Chrome DevTools MCP を使ってレスポンシブ対応の動作を確認する。以下の操作を MCP ツールで実行する:
+  1. **スマートフォン（375px）**: `emulate` で iPhone SE サイズ（375×667）をエミュレートする。`navigate_page` で `/` にアクセスし、`take_screenshot` でサイドバーが非表示でありハンバーガーメニューが表示されていることを確認する。ハンバーガーメニューを `click` してサイドバーが開くことを確認する。`navigate_page` で `/events` にアクセスし、テーブルが横スクロール可能であることを確認する
+  2. **タブレット（768px）**: `resize_page` で 768×1024 に変更する。`navigate_page` で `/` にアクセスし、`take_screenshot` でサイドバーが表示されテーブルが横スクロール可能であることを確認する
+  3. **PC（1280px）**: `resize_page` で 1280×800 に変更する。`navigate_page` で `/` にアクセスし、`take_screenshot` でサイドバーとフルテーブルが並んで表示されていることを確認する
+  4. 各デバイスサイズでイベント登録フォーム（`/events/new`）が正しくレイアウトされていることを確認する（フィールドの並び、ボタンの配置）
+
+- [ ] T081b Chrome DevTools MCP を使って全画面の最終確認を行う。シードデータ（T077 で生成した 100 件 + 1,000 名）がある状態で以下を確認する:
+  1. `navigate_page` で `/events` にアクセスし、`take_screenshot` で大量データでもテーブルが正常に描画されることを確認する
+  2. `navigate_page` で `/`（ダッシュボード）にアクセスし、`take_screenshot` で 12 行の月別サマリーが正確に集計されていることを確認する
+  3. `navigate_page` で `/reports` にアクセスし、`take_screenshot` で収支レポートが正常に表示されることを確認する
+  4. `navigate_page` で `/schedule` にアクセスし、`take_screenshot` でスケジュール一覧が正常に表示されることを確認する
+  5. `navigate_page` で `/participants` にアクセスし、`take_screenshot` で横断参加者一覧が正常に表示されることを確認する
+  6. **パフォーマンス確認**: `performance_start_trace` でトレースを開始し、`navigate_page` で `/events` にアクセスした後 `performance_stop_trace` + `performance_analyze_insight` で初期表示のパフォーマンスを分析する。SC-002（3秒以内）を満たしているか確認する
 
 ---
 
@@ -433,18 +525,18 @@ Phase 8 内:
 
 ## Task Summary
 
-| Phase | 内容 | タスク数 | テストケース数 |
-|-------|------|---------|-------------|
-| Phase 1 | Setup | 13 | 0 |
-| Phase 2 | Foundational | 6 | 0 |
-| Phase 3 | US1 イベント管理 | 18 | 42 (12 + 17 + 13) |
-| Phase 4 | US2 参加者・決済 | 15 | 37 (12 + 14 + 11) |
-| Phase 5 | US3 ダッシュボード | 5 | 4 |
-| Phase 6 | US4 スケジュール・LINE | 5 | 11 |
-| Phase 7 | 収支レポート | 5 | 2 |
-| Phase 8 | Edge Case + E2E | 8 | 32 (14 + 18) |
-| Phase 9 | Polish | 6 | 6 |
-| **Total** | | **81** | **134** |
+| Phase | 内容 | タスク数 | テストケース数 | MCP確認 |
+|-------|------|---------|-------------|---------|
+| Phase 1 | Setup | 13 | 0 | - |
+| Phase 2 | Foundational | 9 | 0 | T019c |
+| Phase 3 | US1 イベント管理 | 19 | 42 (12 + 17 + 13) | T037a |
+| Phase 4 | US2 参加者・決済 | 16 | 37 (12 + 14 + 11) | T052a |
+| Phase 5 | US3 ダッシュボード | 6 | 4 | T057a |
+| Phase 6 | US4 スケジュール・LINE | 6 | 11 | T062a |
+| Phase 7 | 収支レポート | 6 | 2 | T067a |
+| Phase 8 | Edge Case + E2E | 8 | 32 (14 + 18) | - |
+| Phase 9 | Polish | 8 | 6 | T081a, T081b |
+| **Total** | | **91** | **134** | **8 確認** |
 
 **残り 13 ケース**（147 - 134）: パフォーマンステスト（PERF-001〜004 の 4 ケース）は Phase 9 の T078 に含まれる。レスポンシブテスト（RESP-001〜006 の 6 ケース）も T078 に含まれる。E2E テスト内の追加ケース 3 件は各 E2E ファイル内に含まれる。
 

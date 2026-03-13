@@ -34,9 +34,19 @@
 
 ## Constitution Check
 
-*constitution.md が存在しないため、ゲートチェックはスキップ。*
+**Constitution Version**: 1.0.1 (2026-03-13)
 
-制約違反なし。Complexity Tracking は不要。
+| 原則 | 準拠状況 | 備考 |
+|------|---------|------|
+| I. Server Components First | ✅ 準拠 | ページは Server Component、フォーム/テーブルは Client Component |
+| II. Type Safety | ✅ 準拠 | Zod + Prisma 生成型 + ActionResult 判別共用体 |
+| III. TDD | ✅ 準拠 | tasks.md で RED→GREEN→REFACTOR サイクルを明記 |
+| IV. 3-Layer Architecture | ✅ 準拠 | src/lib/ + src/actions/ + src/queries/ + src/app/ |
+| V. Serverless-Ready | ✅ 準拠 | adapter-pg + Supavisor + attachDatabasePool |
+| VI. Accessible & Responsive UI | ✅ 準拠 | shadcn/ui + Tailwind CSS 4 + モバイルファースト |
+| VII. Simplicity | ✅ 準拠 | 認証なし、状態管理ライブラリなし |
+
+制約違反なし。
 
 ---
 
@@ -1031,7 +1041,7 @@ Tailwind CSS のブレークポイント (`md:`, `lg:`) で切り替える。
 
 ## Complexity Tracking
 
-Constitution Check スキップのため、複雑性違反の記録は不要。
+Constitution v1.0.1 に基づく複雑性チェック。違反なし。
 
 | 項目 | 状態 |
 |------|------|
