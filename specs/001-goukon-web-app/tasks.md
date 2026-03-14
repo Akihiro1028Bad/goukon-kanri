@@ -364,17 +364,17 @@
 
 ### E2E テスト
 
-- [ ] T070 Playwright の設定ファイル `playwright.config.ts` をプロジェクトルートに作成する。baseURL を `http://localhost:3000` に設定する。テスト用 DB（port 5433）を使用するための環境変数設定を含める。ブラウザは chromium のみ（高速化のため）。スクリーンショットを `on: 'only-on-failure'` に設定する
+- [x] T070 Playwright の設定ファイル `playwright.config.ts` をプロジェクトルートに作成する。baseURL を `http://localhost:3000` に設定する。テスト用 DB（port 5433）を使用するための環境変数設定を含める。ブラウザは chromium のみ（高速化のため）。スクリーンショットを `on: 'only-on-failure'` に設定する
 
-- [ ] T071 [P] イベント CRUD E2E テスト `tests/e2e/event-crud.spec.ts` を作成する。test-cases.md セクション 3.1 の E2E-001〜E2E-005 の全 5 ケースを実装する。テストの例: (1) イベント登録画面でフォーム入力 → 保存 → 一覧に表示 (2) イベント編集 → 会場名変更 → 保存 → 更新確認 (3) 削除 → 確認ダイアログ承認 → 非表示 → トグル ON → 表示（グレー） → 復元 → 通常表示 (4) フィルタ操作 (5) 自動採番確認
+- [x] T071 [P] イベント CRUD E2E テスト `tests/e2e/event-crud.spec.ts` を作成する。test-cases.md セクション 3.1 の E2E-001〜E2E-005 の全 5 ケースを実装する。テストの例: (1) イベント登録画面でフォーム入力 → 保存 → 一覧に表示 (2) イベント編集 → 会場名変更 → 保存 → 更新確認 (3) 削除 → 確認ダイアログ承認 → 非表示 → トグル ON → 表示（グレー） → 復元 → 通常表示 (4) フィルタ操作 (5) 自動採番確認
 
-- [ ] T072 [P] 参加者・決済 E2E テスト `tests/e2e/participant-payment.spec.ts` を作成する。test-cases.md セクション 3.2 の E2E-010〜E2E-014 の全 5 ケースを実装する
+- [x] T072 [P] 参加者・決済 E2E テスト `tests/e2e/participant-payment.spec.ts` を作成する。test-cases.md セクション 3.2 の E2E-010〜E2E-014 の全 5 ケースを実装する
 
-- [ ] T073 [P] ダッシュボード E2E テスト `tests/e2e/dashboard.spec.ts` を作成する。test-cases.md セクション 3.3 の E2E-020〜E2E-022 の全 3 ケースを実装する。**追加ケース**: イベント詳細画面で状態を「開催予定」→「開催済」に変更した後、ダッシュボードに戻り月別サマリーの集計値が即座に反映されていることを検証する（US1-AC2 カバレッジ）
+- [x] T073 [P] ダッシュボード E2E テスト `tests/e2e/dashboard.spec.ts` を作成する。test-cases.md セクション 3.3 の E2E-020〜E2E-022 の全 3 ケースを実装する。**追加ケース**: イベント詳細画面で状態を「開催予定」→「開催済」に変更した後、ダッシュボードに戻り月別サマリーの集計値が即座に反映されていることを検証する（US1-AC2 カバレッジ）
 
-- [ ] T074 [P] スケジュール・LINE テキスト E2E テスト `tests/e2e/schedule-line.spec.ts` を作成する。test-cases.md セクション 3.4 の E2E-030〜E2E-032 の全 3 ケースを実装する
+- [x] T074 [P] スケジュール・LINE テキスト E2E テスト `tests/e2e/schedule-line.spec.ts` を作成する。test-cases.md セクション 3.4 の E2E-030〜E2E-032 の全 3 ケースを実装する
 
-- [ ] T075 [P] 収支レポート E2E テスト `tests/e2e/reports.spec.ts` を作成する。test-cases.md セクション 3.5 の E2E-040〜E2E-041 の全 2 ケースを実装する
+- [x] T075 [P] 収支レポート E2E テスト `tests/e2e/reports.spec.ts` を作成する。test-cases.md セクション 3.5 の E2E-040〜E2E-041 の全 2 ケースを実装する
 
 **Checkpoint**: 全 E2E テストが PASS すること。`npm run test:e2e` で全テストが緑。
 
