@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { PrismaClient } from "@prisma/client";
-import { getEvents, getEventDetail } from "@/queries/event-queries";
+import { getEvents, getEventDetail, getReportData } from "@/queries/event-queries";
 import { getAllParticipants } from "@/queries/participant-queries";
 import { getMonthlySummary } from "@/queries/dashboard-queries";
 import { calculateEventFinancials } from "@/lib/calculations";
@@ -410,5 +410,54 @@ describe("Dashboard Queries (Integration)", () => {
 
     expect(mar.eventCount).toBe(2);
     expect(mar.matchCount).toBe(8); // 3 + 5
+  });
+});
+
+describe("Report Queries (Integration)", () => {
+  beforeEach(async () => {
+    await testPrisma.participant.deleteMany();
+    await testPrisma.event.deleteMany();
+  });
+
+  afterAll(async () => {
+    await testPrisma.$disconnect();
+  });
+
+  // INT-Q015: getReportData with year filter
+  it("INT-Q015: getReportData returns events with financial data for the specified year", async () => {
+    const event = await createTestEvent({
+      eventId: "2025-02-001",
+      date: new Date("2025-02-15"),
+      venueCost: 15000,
+      expectedCashback: 3000,
+      actualCashback: 2500,
+    });
+    await testPrisma.participant.create({
+      data: { eventId: event.eventId, name: "太郎", gender: "MALE", fee: 6000, paymentStatus: "PAID" },
+    });
+
+    const result = await getReportData({ year: 2025 });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].eventId).toBe("2025-02-001");
+    expect(result[0].venueCost).toBe(15000);
+    expect(result[0].expectedRevenue).toBeGreaterThan(0);
+    expect(result[0].paidRevenue).toBe(6000);
+  });
+
+  // INT-Q016: getReportData includes Food back columns
+  it("INT-Q016: getReportData results include expectedCashback and actualCashback", async () => {
+    await createTestEvent({
+      eventId: "2025-02-001",
+      date: new Date("2025-02-15"),
+      expectedCashback: 5000,
+      actualCashback: 4500,
+    });
+
+    const result = await getReportData({ year: 2025 });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].expectedCashback).toBe(5000);
+    expect(result[0].actualCashback).toBe(4500);
   });
 });

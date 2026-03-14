@@ -327,25 +327,25 @@
 
 ### TDD Step 1: 統合テストを先に書く（RED）
 
-- [ ] T063 収支レポートクエリの統合テストを `tests/integration/queries.test.ts` に追加する。test-cases.md セクション 2.3 の INT-Q015〜INT-Q016 の 2 ケースを追加する。テストケースの例: (1) getReportData で年度フィルタが正しく動作すること (2) 取得結果に expectedCashback, actualCashback が含まれること。**実行して全テストが FAIL することを確認する**
+- [x] T063 収支レポートクエリの統合テストを `tests/integration/queries.test.ts` に追加する。test-cases.md セクション 2.3 の INT-Q015〜INT-Q016 の 2 ケースを追加する。テストケースの例: (1) getReportData で年度フィルタが正しく動作すること (2) 取得結果に expectedCashback, actualCashback が含まれること。**実行して全テストが FAIL することを確認する**
 
 ### TDD Step 2: クエリ実装（GREEN）
 
-- [ ] T064 収支レポート用クエリ `getReportData()` を `src/queries/event-queries.ts` に追加する。contracts/api.md の「レポート関連」セクションの契約に従う。引数 year（必須）と month（任意）で対象イベントをフィルタし、各イベントの収支データ（ReportRow 型）を返す。ReportRow 型は contracts/api.md に定義済み。`calculateEventFinancials()` を使用して収支を計算する
+- [x] T064 収支レポート用クエリ `getReportData()` を `src/queries/event-queries.ts` に追加する。contracts/api.md の「レポート関連」セクションの契約に従う。引数 year（必須）と month（任意）で対象イベントをフィルタし、各イベントの収支データ（ReportRow 型）を返す。ReportRow 型は contracts/api.md に定義済み。`calculateEventFinancials()` を使用して収支を計算する
 
-- [ ] T065 統合テストが PASS することを確認する
+- [x] T065 統合テストが PASS することを確認する
 
 ### TDD Step 3: UI コンポーネント実装
 
-- [ ] T066 [P] 収支レポートテーブルコンポーネント `src/components/reports/report-table.tsx` を作成する。`"use client"` を指定する。TanStack Table を使用する。列定義: イベント ID（リンク）、日付、会場費、予定 CB、実際 CB、見込み収入、決済済み収入、未回収、見込み利益、実現利益、利益率。金額は `¥` + カンマ区切り。利益率は小数第 1 位まで（null は "-"）
+- [x] T066 [P] 収支レポートテーブルコンポーネント `src/components/reports/report-table.tsx` を作成する。`"use client"` を指定する。TanStack Table を使用する。列定義: イベント ID（リンク）、日付、会場費、予定 CB、実際 CB、見込み収入、決済済み収入、未回収、見込み利益、実現利益、利益率。金額は `¥` + カンマ区切り。利益率は小数第 1 位まで（null は "-"）
 
-- [ ] T067 収支レポートページ `src/app/reports/page.tsx` を実装する。Server Component として実装する。`getReportData()` でデータを取得する。年度セレクター・月セレクターのフィルタ UI を配置する。`<ReportTable>` にデータを渡す
+- [x] T067 収支レポートページ `src/app/reports/page.tsx` を実装する。Server Component として実装する。`getReportData()` でデータを取得する。年度セレクター・月セレクターのフィルタ UI を配置する。`<ReportTable>` にデータを渡す
 
 **Checkpoint**: 収支レポートにイベント別収支が表示されること。フィルタが動作すること。
 
 ### 🔍 Chrome MCP 動作確認
 
-- [ ] T067a Chrome DevTools MCP を使って収支レポートの動作を確認する。以下の操作を MCP ツールで実行する:
+- [x] T067a Chrome DevTools MCP を使って収支レポートの動作を確認する。以下の操作を MCP ツールで実行する:
   1. `navigate_page` で `/reports` にアクセスする。`take_screenshot` で収支レポートテーブルが表示され、イベント別の収支内訳（イベントID・日付・会場費・予定CB・実際CB・見込み収入・決済済み収入・未回収・見込み利益・実現利益・利益率）が表示されていることを確認する
   2. 金額が `¥` + カンマ区切りで表示されていること、利益率が小数第 1 位まで表示されていること（見込み収入 0 の場合は「-」）を確認する
   3. 年度セレクター・月セレクターを操作し、フィルタが正しく動作することを確認する
