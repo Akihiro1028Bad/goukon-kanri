@@ -20,31 +20,31 @@
 
 **Purpose**: Next.js プロジェクトの作成と開発環境の構築。全機能の土台となる。
 
-- [ ] T001 Next.js プロジェクトを作成する。`npx create-next-app@latest goukon-kanri --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"` を実行する。完了後、`npm run dev` で http://localhost:3000 にアクセスしてデフォルトページが表示されることを確認する
+- [x] T001 Next.js プロジェクトを作成する。`npx create-next-app@latest goukon-kanri --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"` を実行する。完了後、`npm run dev` で http://localhost:3000 にアクセスしてデフォルトページが表示されることを確認する
 
-- [ ] T002 本番用の依存パッケージをインストールする。`npm install prisma @prisma/client pg @prisma/adapter-pg @vercel/functions zod react-hook-form @hookform/resolvers @tanstack/react-table sonner date-fns` を実行する。package.json に全パッケージが追加されたことを確認する
+- [x] T002 本番用の依存パッケージをインストールする。`npm install prisma @prisma/client pg @prisma/adapter-pg @vercel/functions zod react-hook-form @hookform/resolvers @tanstack/react-table sonner date-fns` を実行する。package.json に全パッケージが追加されたことを確認する
 
-- [ ] T003 開発用の依存パッケージをインストールする。`npm install -D @types/pg vitest @vitejs/plugin-react playwright @playwright/test` を実行する。package.json の devDependencies に全パッケージが追加されたことを確認する
+- [x] T003 開発用の依存パッケージをインストールする。`npm install -D @types/pg vitest @vitejs/plugin-react playwright @playwright/test` を実行する。package.json の devDependencies に全パッケージが追加されたことを確認する
 
-- [ ] T004 docker-compose.yml をプロジェクトルートに作成する。quickstart.md セクション 3.1 の定義をそのまま使用する。開発用 PostgreSQL（port 5432）とテスト用 PostgreSQL（port 5433）の2つのサービスを定義する。作成後、`docker compose up -d` で両コンテナが healthy になることを確認する
+- [x] T004 docker-compose.yml をプロジェクトルートに作成する。quickstart.md セクション 3.1 の定義をそのまま使用する。開発用 PostgreSQL（port 5432）とテスト用 PostgreSQL（port 5433）の2つのサービスを定義する。作成後、`docker compose up -d` で両コンテナが healthy になることを確認する
 
-- [ ] T005 環境変数テンプレート `.env.example` をプロジェクトルートに作成する。plan.md の「環境変数ファイル（更新版）」セクションの内容をそのまま使用する。開発環境用の `DATABASE_URL` と `DIRECT_URL`、テスト環境用の `DATABASE_URL_TEST`（コメントアウト）、本番環境用（コメントアウト）の3ブロックを含める。作成後、`cp .env.example .env` で `.env` ファイルを生成する
+- [x] T005 環境変数テンプレート `.env.example` をプロジェクトルートに作成する。plan.md の「環境変数ファイル（更新版）」セクションの内容をそのまま使用する。開発環境用の `DATABASE_URL` と `DIRECT_URL`、テスト環境用の `DATABASE_URL_TEST`（コメントアウト）、本番環境用（コメントアウト）の3ブロックを含める。作成後、`cp .env.example .env` で `.env` ファイルを生成する
 
-- [ ] T006 Prisma を初期化する。`npx prisma init` を実行する。生成された `prisma/schema.prisma` を data-model.md の Prisma スキーマ定義で置き換える。**重要**: `generator client` に `previewFeatures = ["driverAdapters"]` を含めること。`datasource db` に `directUrl = env("DIRECT_URL")` を含めること。Event モデルに `@@index([date, status])` を追加し、Participant モデルに `@@index([eventId])` と `@@index([name])` を追加する（data-model.md のインデックス設計セクション参照）
+- [x] T006 Prisma を初期化する。`npx prisma init` を実行する。生成された `prisma/schema.prisma` を data-model.md の Prisma スキーマ定義で置き換える。**重要**: `generator client` に `previewFeatures = ["driverAdapters"]` を含めること。`datasource db` に `directUrl = env("DIRECT_URL")` を含めること。Event モデルに `@@index([date, status])` を追加し、Participant モデルに `@@index([eventId])` と `@@index([name])` を追加する（data-model.md のインデックス設計セクション参照）
 
-- [ ] T007 Prisma マイグレーションを実行する。`docker compose up -d db` で開発用 DB が起動していることを確認後、`npx prisma migrate dev --name init` を実行する。マイグレーションが成功したら `npx prisma studio` でブラウザから events テーブルと participants テーブルが作成されていることを確認する
+- [x] T007 Prisma マイグレーションを実行する。`docker compose up -d db` で開発用 DB が起動していることを確認後、`npx prisma migrate dev --name init` を実行する。マイグレーションが成功したら `npx prisma studio` でブラウザから events テーブルと participants テーブルが作成されていることを確認する
 
-- [ ] T008 テスト用 DB にマイグレーションを適用する。`docker compose up -d db-test` でテスト用 DB を起動し、`DATABASE_URL="postgresql://postgres:postgres@localhost:5433/goukon_kanri_test" npx prisma migrate deploy` を実行する
+- [x] T008 テスト用 DB にマイグレーションを適用する。`docker compose up -d db-test` でテスト用 DB を起動し、`DATABASE_URL="postgresql://postgres:postgres@localhost:5433/goukon_kanri_test" npx prisma migrate deploy` を実行する
 
-- [ ] T009 shadcn/ui を初期化する。`npx shadcn@latest init` を実行する（対話形式の質問にはデフォルトで回答）。次に、必要なコンポーネントを追加する: `npx shadcn@latest add button card dialog form input select table badge switch checkbox calendar popover separator dropdown-menu tabs`。`src/components/ui/` ディレクトリにコンポーネントファイルが生成されたことを確認する
+- [x] T009 shadcn/ui を初期化する。`npx shadcn@latest init` を実行する（対話形式の質問にはデフォルトで回答）。次に、必要なコンポーネントを追加する: `npx shadcn@latest add button card dialog form input select table badge switch checkbox calendar popover separator dropdown-menu tabs`。`src/components/ui/` ディレクトリにコンポーネントファイルが生成されたことを確認する
 
-- [ ] T010 Vitest の設定ファイル `vitest.config.ts` をプロジェクトルートに作成する。quickstart.md セクション 8 の設定をそのまま使用する。`@` エイリアスを `./src` に解決する設定を含める
+- [x] T010 Vitest の設定ファイル `vitest.config.ts` をプロジェクトルートに作成する。quickstart.md セクション 8 の設定をそのまま使用する。`@` エイリアスを `./src` に解決する設定を含める
 
-- [ ] T011 package.json にスクリプトを追加する。quickstart.md セクション 8 の scripts をそのまま使用する。`dev`, `build`, `start`, `lint`, `test`, `test:run`, `test:e2e`, `db:up`, `db:down`, `db:reset`, `db:studio`, `db:migrate`, `db:test:up`, `db:test:migrate` の全スクリプトを追加する
+- [x] T011 package.json にスクリプトを追加する。quickstart.md セクション 8 の scripts をそのまま使用する。`dev`, `build`, `start`, `lint`, `test`, `test:run`, `test:e2e`, `db:up`, `db:down`, `db:reset`, `db:studio`, `db:migrate`, `db:test:up`, `db:test:migrate` の全スクリプトを追加する
 
-- [ ] T012 ソースコードのディレクトリ構造を作成する。quickstart.md セクション 6 のコマンドを実行して、以下のディレクトリを作成する: `src/app/events/new`, `src/app/events/[id]/edit`, `src/app/participants`, `src/app/reports`, `src/app/schedule`, `src/lib`, `src/actions`, `src/queries`, `src/types`, `src/components/events`, `src/components/participants`, `src/components/dashboard`, `src/components/schedule`, `src/components/reports`, `src/components/layout`
+- [x] T012 ソースコードのディレクトリ構造を作成する。quickstart.md セクション 6 のコマンドを実行して、以下のディレクトリを作成する: `src/app/events/new`, `src/app/events/[id]/edit`, `src/app/participants`, `src/app/reports`, `src/app/schedule`, `src/lib`, `src/actions`, `src/queries`, `src/types`, `src/components/events`, `src/components/participants`, `src/components/dashboard`, `src/components/schedule`, `src/components/reports`, `src/components/layout`
 
-- [ ] T013 テストファイル用のディレクトリ構造を作成する。`mkdir -p tests/unit tests/integration tests/e2e` を実行する
+- [x] T013 テストファイル用のディレクトリ構造を作成する。`mkdir -p tests/unit tests/integration tests/e2e` を実行する
 
 **Checkpoint**: `npm run dev` でエラーなく起動し、`npm run test:run` で Vitest が実行できること（テストファイルなしの状態で OK）
 
@@ -56,19 +56,19 @@
 
 **⚠️ CRITICAL**: この Phase が完了するまで、ユーザーストーリーの実装に着手してはならない。
 
-- [ ] T014 共通型定義ファイル `src/types/index.ts` を作成する。contracts/api.md の「共通型定義」セクションの内容をそのまま使用する。`ActionResult<T>` 型、`EVENT_STATUS_LABELS`、`GENDER_LABELS`、`PAYMENT_STATUS_LABELS`、`FinancialSummary` 型、`MonthlySummaryRow` 型を定義する
+- [x] T014 共通型定義ファイル `src/types/index.ts` を作成する。contracts/api.md の「共通型定義」セクションの内容をそのまま使用する。`ActionResult<T>` 型、`EVENT_STATUS_LABELS`、`GENDER_LABELS`、`PAYMENT_STATUS_LABELS`、`FinancialSummary` 型、`MonthlySummaryRow` 型を定義する
 
-- [ ] T015 Prisma クライアントシングルトン `src/lib/prisma.ts` を作成する。plan.md の「Prisma クライアント（サーバーレス対応）」セクションの実装をそのまま使用する。開発環境では標準の PrismaClient、本番環境では `@prisma/adapter-pg` + `@vercel/functions` の `attachDatabasePool` を使用する
+- [x] T015 Prisma クライアントシングルトン `src/lib/prisma.ts` を作成する。plan.md の「Prisma クライアント（サーバーレス対応）」セクションの実装をそのまま使用する。開発環境では標準の PrismaClient、本番環境では `@prisma/adapter-pg` + `@vercel/functions` の `attachDatabasePool` を使用する
 
-- [ ] T016 [P] Zod バリデーションスキーマ `src/lib/validations.ts` を作成する。contracts/api.md の「Zod バリデーションスキーマ」セクションの内容をそのまま使用する。`eventFormSchema`、`participantFormSchema`、`bulkPaymentSchema` の3つのスキーマを定義する
+- [x] T016 [P] Zod バリデーションスキーマ `src/lib/validations.ts` を作成する。contracts/api.md の「Zod バリデーションスキーマ」セクションの内容をそのまま使用する。`eventFormSchema`、`participantFormSchema`、`bulkPaymentSchema` の3つのスキーマを定義する
 
-- [ ] T017 [P] 共通レイアウト `src/app/layout.tsx` を作成する。quickstart.md セクション 7.3 の実装をそのまま使用する。`<html lang="ja">` でラップし、`<Navigation />` コンポーネントと `<Toaster>` を配置する
+- [x] T017 [P] 共通レイアウト `src/app/layout.tsx` を作成する。quickstart.md セクション 7.3 の実装をそのまま使用する。`<html lang="ja">` でラップし、`<Navigation />` コンポーネントと `<Toaster>` を配置する
 
-- [ ] T018 [P] サイドバーナビゲーションコンポーネント `src/components/layout/navigation.tsx` を作成する。quickstart.md セクション 7.3 の実装をそのまま使用する。`"use client"` を指定し、ダッシュボード、イベント一覧、参加者一覧、スケジュール、収支レポートの5つのナビゲーションリンクを含める。現在のパスに応じてアクティブ状態を表示する
+- [x] T018 [P] サイドバーナビゲーションコンポーネント `src/components/layout/navigation.tsx` を作成する。quickstart.md セクション 7.3 の実装をそのまま使用する。`"use client"` を指定し、ダッシュボード、イベント一覧、参加者一覧、スケジュール、収支レポートの5つのナビゲーションリンクを含める。現在のパスに応じてアクティブ状態を表示する
 
-- [ ] T019 全ページの空のプレースホルダーを作成する。以下の各ファイルに「ページ名 + 準備中」のみを表示する最小限の Server Component を作成する: `src/app/page.tsx`（ダッシュボード）, `src/app/events/page.tsx`（イベント一覧）, `src/app/events/new/page.tsx`（イベント新規登録）, `src/app/events/[id]/page.tsx`（イベント詳細）, `src/app/events/[id]/edit/page.tsx`（イベント編集）, `src/app/participants/page.tsx`（参加者一覧）, `src/app/reports/page.tsx`（収支レポート）, `src/app/schedule/page.tsx`（スケジュール）。作成後、`npm run dev` で各 URL にアクセスしてページ名が表示されることを確認する
+- [x] T019 全ページの空のプレースホルダーを作成する。以下の各ファイルに「ページ名 + 準備中」のみを表示する最小限の Server Component を作成する: `src/app/page.tsx`（ダッシュボード）, `src/app/events/page.tsx`（イベント一覧）, `src/app/events/new/page.tsx`（イベント新規登録）, `src/app/events/[id]/page.tsx`（イベント詳細）, `src/app/events/[id]/edit/page.tsx`（イベント編集）, `src/app/participants/page.tsx`（参加者一覧）, `src/app/reports/page.tsx`（収支レポート）, `src/app/schedule/page.tsx`（スケジュール）。作成後、`npm run dev` で各 URL にアクセスしてページ名が表示されることを確認する
 
-- [ ] T019a [P] Suspense 境界ファイルを作成する。憲章 Principle I に従い、以下のファイルを作成する:
+- [x] T019a [P] Suspense 境界ファイルを作成する。憲章 Principle I に従い、以下のファイルを作成する:
   - `src/app/loading.tsx`: 共通ローディング UI（shadcn/ui の Skeleton または「読み込み中...」テキスト）を表示する
   - `src/app/error.tsx`: `"use client"` を指定し、エラーメッセージと「再試行」ボタンを表示する Error Boundary。props として `error: Error` と `reset: () => void` を受け取る
   - `src/app/not-found.tsx`: 「ページが見つかりません」メッセージとダッシュボードへのリンクを表示する
@@ -76,7 +76,7 @@
   - `src/app/events/[id]/loading.tsx`: イベント詳細用のローディング UI
   - `src/app/events/[id]/not-found.tsx`: 「イベントが見つかりません」メッセージを表示する
 
-- [ ] T019b [P] 各ページに `generateMetadata` を設定する。憲章 Principle I に従い、以下のページに metadata を追加する:
+- [x] T019b [P] 各ページに `generateMetadata` を設定する。憲章 Principle I に従い、以下のページに metadata を追加する:
   - `src/app/layout.tsx`: `metadata` エクスポートでサイトタイトル「合コン管理」とデフォルト description を設定する
   - `src/app/events/page.tsx`: title「イベント一覧」
   - `src/app/events/new/page.tsx`: title「イベント新規登録」
@@ -90,7 +90,7 @@
 
 ### 🔍 Chrome MCP 動作確認
 
-- [ ] T019c Chrome DevTools MCP を使って Phase 2 の動作を確認する。`npm run dev` でアプリを起動した状態で、以下の操作を MCP ツールで実行する:
+- [x] T019c Chrome DevTools MCP を使って Phase 2 の動作を確認する。`npm run dev` でアプリを起動した状態で、以下の操作を MCP ツールで実行する:
   1. `navigate_page` で `http://localhost:3000` にアクセスし、`take_screenshot` でダッシュボードのプレースホルダーが表示されることを確認する
   2. `click` でサイドバーの「イベント一覧」リンクをクリックし、`/events` に遷移することを確認する。`take_screenshot` で画面をキャプチャする
   3. 同様にサイドバーの「参加者一覧」「スケジュール」「収支レポート」の各リンクをクリックし、各ページに遷移できることを確認する
@@ -111,61 +111,61 @@
 
 > **テストを書いて実行し、全て FAIL（赤）になることを確認してから実装に進む**
 
-- [ ] T020 [P] [US1] イベント ID 採番ロジックのユニットテスト `tests/unit/event-id.test.ts` を作成する。test-cases.md セクション 1.2 の EVID-001〜EVID-012 の全 12 ケースを実装する。テスト対象は `src/lib/event-id.ts` の `generateEventId()` 関数。Prisma クライアントはモックする（`vi.mock` 使用）。テストケースの例: (1) 当月初のイベントで "2025-02-001" が返ること (2) 論理削除済み ID を含む最大値から採番すること (3) NNN=100 超でも正常に採番すること。**実行して全テストが FAIL することを確認する**
+- [x] T020 [P] [US1] イベント ID 採番ロジックのユニットテスト `tests/unit/event-id.test.ts` を作成する。test-cases.md セクション 1.2 の EVID-001〜EVID-012 の全 12 ケースを実装する。テスト対象は `src/lib/event-id.ts` の `generateEventId()` 関数。Prisma クライアントはモックする（`vi.mock` 使用）。テストケースの例: (1) 当月初のイベントで "2025-02-001" が返ること (2) 論理削除済み ID を含む最大値から採番すること (3) NNN=100 超でも正常に採番すること。**実行して全テストが FAIL することを確認する**
 
-- [ ] T021 [P] [US1] イベントフォームバリデーションのユニットテスト `tests/unit/validations.test.ts` を作成する。test-cases.md セクション 1.4 の VAL-E001〜VAL-E017 の全 17 ケースを実装する。テスト対象は `src/lib/validations.ts` の `eventFormSchema`。テストケースの例: (1) 全必須フィールド入力で success (2) 日付未入力でエラー (3) 時刻フォーマット不正でエラー (4) 会場名 100 文字超でエラー (5) 空文字の mapUrl が null に変換されること。**実行して全テストが FAIL することを確認する**（注: validations.ts は T016 で作成済みなので、一部のテストは PASS する可能性がある。PASS するテストはそのままで OK）
+- [x] T021 [P] [US1] イベントフォームバリデーションのユニットテスト `tests/unit/validations.test.ts` を作成する。test-cases.md セクション 1.4 の VAL-E001〜VAL-E017 の全 17 ケースを実装する。テスト対象は `src/lib/validations.ts` の `eventFormSchema`。テストケースの例: (1) 全必須フィールド入力で success (2) 日付未入力でエラー (3) 時刻フォーマット不正でエラー (4) 会場名 100 文字超でエラー (5) 空文字の mapUrl が null に変換されること。**実行して全テストが FAIL することを確認する**（注: validations.ts は T016 で作成済みなので、一部のテストは PASS する可能性がある。PASS するテストはそのままで OK）
 
 ### TDD Step 2: ビジネスロジック実装（GREEN）
 
-- [ ] T022 [US1] イベント ID 採番ロジック `src/lib/event-id.ts` を実装する。data-model.md の「イベントID 採番ロジック」セクションの実装をベースにする。引数として PrismaClient インスタンスとイベント日付（Date）を受け取り、YYYY-MM-NNN 形式の文字列を返す。**重要なルール**: (1) 論理削除済みイベントも含めて当月の最大連番を取得する (2) 欠番は再利用しない（単調増加） (3) NNN は 3 桁ゼロ埋め（100 以上にも対応）。実装後、`npm run test:run tests/unit/event-id.test.ts` で EVID-001〜012 の全 12 テストが PASS（緑）になることを確認する
+- [x] T022 [US1] イベント ID 採番ロジック `src/lib/event-id.ts` を実装する。data-model.md の「イベントID 採番ロジック」セクションの実装をベースにする。引数として PrismaClient インスタンスとイベント日付（Date）を受け取り、YYYY-MM-NNN 形式の文字列を返す。**重要なルール**: (1) 論理削除済みイベントも含めて当月の最大連番を取得する (2) 欠番は再利用しない（単調増加） (3) NNN は 3 桁ゼロ埋め（100 以上にも対応）。実装後、`npm run test:run tests/unit/event-id.test.ts` で EVID-001〜012 の全 12 テストが PASS（緑）になることを確認する
 
 ### TDD Step 3: 統合テストを先に書く（RED）
 
-- [ ] T023 [US1] イベント Server Actions の統合テスト `tests/integration/event-actions.test.ts` を作成する。test-cases.md セクション 2.1 の INT-E001〜INT-E013 の全 13 ケースを実装する。テスト用 DB（port 5433）に接続する。各テストの前後でデータをクリーンアップする `beforeEach` / `afterEach` を設定する。テストケースの例: (1) createEvent で eventId が YYYY-MM-NNN 形式で返ること (2) 不正な FormData でバリデーションエラー (3) 同月 2 件目の登録で NNN=002 (4) deleteEvent でイベントと参加者が論理削除 (5) restoreEvent で復元。**実行して全テストが FAIL することを確認する**
+- [x] T023 [US1] イベント Server Actions の統合テスト `tests/integration/event-actions.test.ts` を作成する。test-cases.md セクション 2.1 の INT-E001〜INT-E013 の全 13 ケースを実装する。テスト用 DB（port 5433）に接続する。各テストの前後でデータをクリーンアップする `beforeEach` / `afterEach` を設定する。テストケースの例: (1) createEvent で eventId が YYYY-MM-NNN 形式で返ること (2) 不正な FormData でバリデーションエラー (3) 同月 2 件目の登録で NNN=002 (4) deleteEvent でイベントと参加者が論理削除 (5) restoreEvent で復元。**実行して全テストが FAIL することを確認する**
 
-- [ ] T024 [P] [US1] イベントデータ取得関数の統合テスト `tests/integration/queries.test.ts` を作成する。test-cases.md セクション 2.3 の INT-Q001〜INT-Q006（イベント一覧関連）を実装する。テストケースの例: (1) getEvents で年度フィルタ (2) 月フィルタ (3) 状態フィルタ (4) 論理削除除外/含む (5) 日付降順ソート。**実行して全テストが FAIL することを確認する**
+- [x] T024 [P] [US1] イベントデータ取得関数の統合テスト `tests/integration/queries.test.ts` を作成する。test-cases.md セクション 2.3 の INT-Q001〜INT-Q006（イベント一覧関連）を実装する。テストケースの例: (1) getEvents で年度フィルタ (2) 月フィルタ (3) 状態フィルタ (4) 論理削除除外/含む (5) 日付降順ソート。**実行して全テストが FAIL することを確認する**
 
 ### TDD Step 4: Server Actions & クエリ実装（GREEN）
 
-- [ ] T025 [US1] イベントデータ取得関数 `src/queries/event-queries.ts` を実装する。contracts/api.md の「イベント関連」セクションの契約に従う。`getEvents()` 関数を実装する: 引数として year（必須）、month（任意）、status（任意）、includeDeleted（デフォルト false）、sortBy（デフォルト "date"）、sortOrder（デフォルト "desc"）を受け取る。Prisma の `findMany` で条件付きクエリを実行する。戻り値は `EventWithSummary[]` 型（イベント情報 + 収支サマリー）。**注意**: 収支サマリーの計算は calculations.ts に委譲するが、この時点ではまだ実装していないため、ダミー値（全て 0）を返す。後の Phase で差し替える
+- [x] T025 [US1] イベントデータ取得関数 `src/queries/event-queries.ts` を実装する。contracts/api.md の「イベント関連」セクションの契約に従う。`getEvents()` 関数を実装する: 引数として year（必須）、month（任意）、status（任意）、includeDeleted（デフォルト false）、sortBy（デフォルト "date"）、sortOrder（デフォルト "desc"）を受け取る。Prisma の `findMany` で条件付きクエリを実行する。戻り値は `EventWithSummary[]` 型（イベント情報 + 収支サマリー）。**注意**: 収支サマリーの計算は calculations.ts に委譲するが、この時点ではまだ実装していないため、ダミー値（全て 0）を返す。後の Phase で差し替える
 
-- [ ] T026 [US1] `getEventDetail()` 関数を `src/queries/event-queries.ts` に追加する。eventId（YYYY-MM-NNN 形式）を受け取り、イベント情報 + 参加者一覧 + 収支サマリーを返す。Prisma の `findUnique` で `include: { participants: true }` を指定する。イベントが見つからない場合は null を返す
+- [x] T026 [US1] `getEventDetail()` 関数を `src/queries/event-queries.ts` に追加する。eventId（YYYY-MM-NNN 形式）を受け取り、イベント情報 + 参加者一覧 + 収支サマリーを返す。Prisma の `findUnique` で `include: { participants: true }` を指定する。イベントが見つからない場合は null を返す
 
-- [ ] T027 [US1] イベント Server Actions `src/actions/event-actions.ts` を実装する。contracts/api.md の契約に従い、以下の 4 つの関数を実装する。ファイル先頭に `"use server";` を記述する:
+- [x] T027 [US1] イベント Server Actions `src/actions/event-actions.ts` を実装する。contracts/api.md の契約に従い、以下の 4 つの関数を実装する。ファイル先頭に `"use server";` を記述する:
   - `createEvent(formData: FormData)`: Zod でバリデーション → generateEventId() で ID 採番 → prisma.event.create() で DB 保存 → revalidatePath("/events") と revalidatePath("/") でキャッシュ無効化 → ActionResult<{ eventId }> を返す
   - `updateEvent(eventId: string, formData: FormData)`: Zod でバリデーション → prisma.event.update() で更新 → revalidatePath でキャッシュ無効化
   - `deleteEvent(eventId: string)`: prisma.$transaction 内でイベントと紐付く全参加者の isDeleted を true に設定 → revalidatePath でキャッシュ無効化
   - `restoreEvent(eventId: string)`: prisma.$transaction 内でイベントと紐付く全参加者の isDeleted を false に設定 → revalidatePath でキャッシュ無効化
 
-- [ ] T028 [US1] 統合テストが PASS することを確認する。`npm run test:run tests/integration/event-actions.test.ts` と `npm run test:run tests/integration/queries.test.ts`（イベント関連テストのみ）を実行し、全テストが PASS（緑）になることを確認する。FAIL するテストがあれば実装を修正する
+- [x] T028 [US1] 統合テストが PASS することを確認する。`npm run test:run tests/integration/event-actions.test.ts` と `npm run test:run tests/integration/queries.test.ts`（イベント関連テストのみ）を実行し、全テストが PASS（緑）になることを確認する。FAIL するテストがあれば実装を修正する
 
 ### TDD Step 5: UI コンポーネント実装
 
-- [ ] T029 [P] [US1] イベント登録/編集フォームコンポーネント `src/components/events/event-form.tsx` を作成する。plan.md の「フォームの実装パターン」セクションの実装をベースにする。`"use client"` を指定する。React Hook Form + Zod の zodResolver を使用する。フォームフィールド: 日付（date input）、開始時刻（time input）、会場名（text input）、マップ URL（url input、任意）、担当者（text input、任意）、エリア（text input）、男女別募集定員（number input × 2、横並び）、男女別参加費（number input × 2、横並び）、テーマ（text input、任意）、対象職業（text input、任意）、状態（Select: 開催予定/開催済/キャンセル）、会場費（number input）、マッチング件数（number input）、予定 CB（number input）、実際 CB（number input）、メモ（textarea、任意）。保存ボタンとキャンセルボタンを配置する。`defaultValues` prop で編集モード（既存データのプリフィル）にも対応する
+- [x] T029 [P] [US1] イベント登録/編集フォームコンポーネント `src/components/events/event-form.tsx` を作成する。plan.md の「フォームの実装パターン」セクションの実装をベースにする。`"use client"` を指定する。React Hook Form + Zod の zodResolver を使用する。フォームフィールド: 日付（date input）、開始時刻（time input）、会場名（text input）、マップ URL（url input、任意）、担当者（text input、任意）、エリア（text input）、男女別募集定員（number input × 2、横並び）、男女別参加費（number input × 2、横並び）、テーマ（text input、任意）、対象職業（text input、任意）、状態（Select: 開催予定/開催済/キャンセル）、会場費（number input）、マッチング件数（number input）、予定 CB（number input）、実際 CB（number input）、メモ（textarea、任意）。保存ボタンとキャンセルボタンを配置する。`defaultValues` prop で編集モード（既存データのプリフィル）にも対応する
 
-- [ ] T030 [P] [US1] 削除確認ダイアログコンポーネント `src/components/events/delete-dialog.tsx` を作成する。`"use client"` を指定する。shadcn/ui の Dialog コンポーネントを使用する。props として `eventId: string`、`onConfirm: () => void`、`open: boolean`、`onOpenChange: (open: boolean) => void` を受け取る。「このイベントと紐付く参加者データを削除しますか？（データは保持され、後で復元できます）」の確認メッセージを表示する。「削除する」ボタンで `deleteEvent` Server Action を呼び出し、成功時に toast.success("削除しました") を表示してイベント一覧にリダイレクトする
+- [x] T030 [P] [US1] 削除確認ダイアログコンポーネント `src/components/events/delete-dialog.tsx` を作成する。`"use client"` を指定する。shadcn/ui の Dialog コンポーネントを使用する。props として `eventId: string`、`onConfirm: () => void`、`open: boolean`、`onOpenChange: (open: boolean) => void` を受け取る。「このイベントと紐付く参加者データを削除しますか？（データは保持され、後で復元できます）」の確認メッセージを表示する。「削除する」ボタンで `deleteEvent` Server Action を呼び出し、成功時に toast.success("削除しました") を表示してイベント一覧にリダイレクトする
 
-- [ ] T031 [US1] イベント一覧テーブルコンポーネント `src/components/events/event-table.tsx` を作成する。plan.md の「データテーブルの実装パターン」セクションの実装をベースにする。`"use client"` を指定する。TanStack Table を使用する。列定義: イベント ID（リンク）、日付、会場名、エリア、状態（Badge）、参加者数、見込み収入。「削除済みを表示」トグル（Switch コンポーネント）を含める。削除済みイベントは半透明（`opacity-50`）で表示する。削除済みイベントには「復元」ボタンを表示する。列ヘッダーをクリックでソートできるようにする
+- [x] T031 [US1] イベント一覧テーブルコンポーネント `src/components/events/event-table.tsx` を作成する。plan.md の「データテーブルの実装パターン」セクションの実装をベースにする。`"use client"` を指定する。TanStack Table を使用する。列定義: イベント ID（リンク）、日付、会場名、エリア、状態（Badge）、参加者数、見込み収入。「削除済みを表示」トグル（Switch コンポーネント）を含める。削除済みイベントは半透明（`opacity-50`）で表示する。削除済みイベントには「復元」ボタンを表示する。列ヘッダーをクリックでソートできるようにする
 
-- [ ] T032 [US1] イベント詳細表示コンポーネント `src/components/events/event-detail.tsx` を作成する。`"use client"` を指定する。props として `EventDetail` 型（イベント情報 + 参加者一覧 + 収支サマリー）を受け取る。表示項目: イベント ID、日付、時刻、会場名（マップ URL があればリンク表示）、エリア、男女別定員、男女別参加費、テーマ、対象職業、状態（Badge）、会場費、予定 CB、実際 CB、マッチング件数、メモ。「編集」ボタン（/events/[id]/edit へ遷移）と「削除」ボタン（DeleteDialog を開く）を配置する。**参加者一覧と収支サマリーの表示は Phase 4（US2）で追加するため、この時点ではスキップする**
+- [x] T032 [US1] イベント詳細表示コンポーネント `src/components/events/event-detail.tsx` を作成する。`"use client"` を指定する。props として `EventDetail` 型（イベント情報 + 参加者一覧 + 収支サマリー）を受け取る。表示項目: イベント ID、日付、時刻、会場名（マップ URL があればリンク表示）、エリア、男女別定員、男女別参加費、テーマ、対象職業、状態（Badge）、会場費、予定 CB、実際 CB、マッチング件数、メモ。「編集」ボタン（/events/[id]/edit へ遷移）と「削除」ボタン（DeleteDialog を開く）を配置する。**参加者一覧と収支サマリーの表示は Phase 4（US2）で追加するため、この時点ではスキップする**
 
 ### TDD Step 6: ページコンポーネント実装
 
-- [ ] T033 [US1] イベント一覧ページ `src/app/events/page.tsx` を実装する。Server Component として実装する。URL クエリパラメータから `year`（デフォルト: 現在年）、`month`（任意）、`status`（任意）を取得する。`getEvents()` でデータを取得し、`<EventTable>` に渡す。ページタイトル「イベント一覧」と「新規登録」ボタン（/events/new へのリンク）を配置する。年度セレクター（Select）と月セレクター（Select）と状態セレクター（Select）をフィルタ UI として配置する
+- [x] T033 [US1] イベント一覧ページ `src/app/events/page.tsx` を実装する。Server Component として実装する。URL クエリパラメータから `year`（デフォルト: 現在年）、`month`（任意）、`status`（任意）を取得する。`getEvents()` でデータを取得し、`<EventTable>` に渡す。ページタイトル「イベント一覧」と「新規登録」ボタン（/events/new へのリンク）を配置する。年度セレクター（Select）と月セレクター（Select）と状態セレクター（Select）をフィルタ UI として配置する
 
-- [ ] T034 [US1] イベント新規登録ページ `src/app/events/new/page.tsx` を実装する。Server Component として実装する。ページタイトル「イベント新規登録」と `<EventForm>` コンポーネント（defaultValues なし）を配置する
+- [x] T034 [US1] イベント新規登録ページ `src/app/events/new/page.tsx` を実装する。Server Component として実装する。ページタイトル「イベント新規登録」と `<EventForm>` コンポーネント（defaultValues なし）を配置する
 
-- [ ] T035 [US1] イベント詳細ページ `src/app/events/[id]/page.tsx` を実装する。Server Component として実装する。URL パラメータの `id` から `getEventDetail(id)` でデータを取得する。イベントが見つからない場合は `notFound()` を呼び出す。`<EventDetail>` コンポーネントにデータを渡す
+- [x] T035 [US1] イベント詳細ページ `src/app/events/[id]/page.tsx` を実装する。Server Component として実装する。URL パラメータの `id` から `getEventDetail(id)` でデータを取得する。イベントが見つからない場合は `notFound()` を呼び出す。`<EventDetail>` コンポーネントにデータを渡す
 
-- [ ] T036 [US1] イベント編集ページ `src/app/events/[id]/edit/page.tsx` を実装する。Server Component として実装する。`getEventDetail(id)` でデータを取得し、`<EventForm defaultValues={eventData}>` にプリフィルデータを渡す
+- [x] T036 [US1] イベント編集ページ `src/app/events/[id]/edit/page.tsx` を実装する。Server Component として実装する。`getEventDetail(id)` でデータを取得し、`<EventForm defaultValues={eventData}>` にプリフィルデータを渡す
 
-- [ ] T037 [US1] イベント一覧ページのフィルタ機能を実装する。`src/app/events/page.tsx` に年度・月・状態のフィルタ UI を追加する。フィルタの変更時に URL クエリパラメータを更新して `router.push` でページを再読み込みする。`"use client"` のフィルタコンポーネント `src/components/events/event-filters.tsx` を別途作成し、`<Select>` コンポーネントで年度（現在年 ± 5年）、月（1〜12 + 全月）、状態（開催予定/開催済/キャンセル + 全状態）を選択できるようにする
+- [x] T037 [US1] イベント一覧ページのフィルタ機能を実装する。`src/app/events/page.tsx` に年度・月・状態のフィルタ UI を追加する。フィルタの変更時に URL クエリパラメータを更新して `router.push` でページを再読み込みする。`"use client"` のフィルタコンポーネント `src/components/events/event-filters.tsx` を別途作成し、`<Select>` コンポーネントで年度（現在年 ± 5年）、月（1〜12 + 全月）、状態（開催予定/開催済/キャンセル + 全状態）を選択できるようにする
 
 **Checkpoint**: イベントの登録・一覧表示・詳細表示・編集・論理削除・復元・フィルタリングが動作すること。`npm run test:run` でユニットテスト（EVID-001〜012, VAL-E001〜017）が全て PASS。統合テスト（INT-E001〜013, INT-Q001〜006）が全て PASS。
 
 ### 🔍 Chrome MCP 動作確認
 
-- [ ] T037a [US1] Chrome DevTools MCP を使ってイベント CRUD の動作を確認する。以下の操作を MCP ツールで実行する:
+- [x] T037a [US1] Chrome DevTools MCP を使ってイベント CRUD の動作を確認する。以下の操作を MCP ツールで実行する:
   1. `navigate_page` で `/events/new` にアクセスする。`take_screenshot` でイベント登録フォームが正しく表示されていることを確認する
   2. `fill_form` でフォームに以下のテストデータを入力する: 日付=明日、時刻=19:00、会場名=テスト会場A、エリア=渋谷、男性定員=5、女性定員=5、男性参加費=6000、女性参加費=4000、状態=開催予定。`click` で「登録」ボタンをクリックする
   3. 登録成功後、イベント詳細ページにリダイレクトされることを確認する。`take_screenshot` でイベントID（YYYY-MM-001 形式）が表示されていること、入力データが正しく反映されていることを確認する
@@ -188,27 +188,27 @@
 
 ### TDD Step 1: ユニットテストを先に書く（RED）
 
-- [ ] T038 [P] [US2] 収支計算ロジックのユニットテスト `tests/unit/calculations.test.ts` を作成する。test-cases.md セクション 1.1 の CALC-001〜CALC-012 の全 12 ケースを実装する。テスト対象は `src/lib/calculations.ts` の `calculateEventFinancials()` 関数。テストケースの例: (1) 男女各 3 名・全員未決済で見込み収入 30000 円 (2) 全員決済済で実現利益が正しいこと (3) 参加者 0 名で全カウント 0・profitRate が null (4) 見込み収入 0 円で profitRate が null（ゼロ除算回避） (5) 個別参加費とイベント標準レートが異なる場合、見込み収入はイベント標準レートで計算されること (6) 論理削除された参加者は集計から除外されること。**実行して全テストが FAIL することを確認する**
+- [x] T038 [P] [US2] 収支計算ロジックのユニットテスト `tests/unit/calculations.test.ts` を作成する。test-cases.md セクション 1.1 の CALC-001〜CALC-012 の全 12 ケースを実装する。テスト対象は `src/lib/calculations.ts` の `calculateEventFinancials()` 関数。テストケースの例: (1) 男女各 3 名・全員未決済で見込み収入 30000 円 (2) 全員決済済で実現利益が正しいこと (3) 参加者 0 名で全カウント 0・profitRate が null (4) 見込み収入 0 円で profitRate が null（ゼロ除算回避） (5) 個別参加費とイベント標準レートが異なる場合、見込み収入はイベント標準レートで計算されること (6) 論理削除された参加者は集計から除外されること。**実行して全テストが FAIL することを確認する**
 
-- [ ] T039 [P] [US2] 参加者フォームバリデーションのユニットテストを `tests/unit/validations.test.ts` に追加する。test-cases.md セクション 1.4 の VAL-P001〜VAL-P010 の全 10 ケースと VAL-B001〜VAL-B004 の全 4 ケースを追加する。テスト対象は `participantFormSchema` と `bulkPaymentSchema`。テストケースの例: (1) 氏名未入力でエラー (2) 参加費 0 円が許容されること (3) 一括決済で参加者未選択でエラー。**実行して全テストが FAIL することを確認する**
+- [x] T039 [P] [US2] 参加者フォームバリデーションのユニットテストを `tests/unit/validations.test.ts` に追加する。test-cases.md セクション 1.4 の VAL-P001〜VAL-P010 の全 10 ケースと VAL-B001〜VAL-B004 の全 4 ケースを追加する。テスト対象は `participantFormSchema` と `bulkPaymentSchema`。テストケースの例: (1) 氏名未入力でエラー (2) 参加費 0 円が許容されること (3) 一括決済で参加者未選択でエラー。**実行して全テストが FAIL することを確認する**
 
 ### TDD Step 2: ビジネスロジック実装（GREEN）
 
-- [ ] T040 [US2] 収支計算ロジック `src/lib/calculations.ts` を実装する。data-model.md の「計算ロジックの実装場所」セクションの実装を正として使用する（plan.md にも同様のコードがあるが data-model.md を優先する）。`calculateEventFinancials()` 関数を実装する。**重要なルール**: (1) 見込み収入はイベントの男女別標準参加費 × 人数で計算する（参加者の個別参加費は使わない） (2) 決済済み収入は決済済み参加者の個別参加費の合計 (3) 論理削除された参加者は除外する (4) 見込み収入が 0 の場合は利益率を null にする（ゼロ除算回避） (5) 利益率は小数第 2 位まで（Math.round で 10000 倍して割る）。実装後、`npm run test:run tests/unit/calculations.test.ts` で CALC-001〜012 の全 12 テストが PASS になることを確認する
+- [x] T040 [US2] 収支計算ロジック `src/lib/calculations.ts` を実装する。data-model.md の「計算ロジックの実装場所」セクションの実装を正として使用する（plan.md にも同様のコードがあるが data-model.md を優先する）。`calculateEventFinancials()` 関数を実装する。**重要なルール**: (1) 見込み収入はイベントの男女別標準参加費 × 人数で計算する（参加者の個別参加費は使わない） (2) 決済済み収入は決済済み参加者の個別参加費の合計 (3) 論理削除された参加者は除外する (4) 見込み収入が 0 の場合は利益率を null にする（ゼロ除算回避） (5) 利益率は小数第 2 位まで（Math.round で 10000 倍して割る）。実装後、`npm run test:run tests/unit/calculations.test.ts` で CALC-001〜012 の全 12 テストが PASS になることを確認する
 
-- [ ] T041 [US2] Phase 3 の T025 で作成した `src/queries/event-queries.ts` の `getEvents()` と `getEventDetail()` を更新する。ダミー値を返していた収支サマリー部分を、`calculateEventFinancials()` を呼び出して実際の値を返すように差し替える。参加者データを include して取得し、計算関数に渡す
+- [x] T041 [US2] Phase 3 の T025 で作成した `src/queries/event-queries.ts` の `getEvents()` と `getEventDetail()` を更新する。ダミー値を返していた収支サマリー部分を、`calculateEventFinancials()` を呼び出して実際の値を返すように差し替える。参加者データを include して取得し、計算関数に渡す
 
 ### TDD Step 3: 統合テストを先に書く（RED）
 
-- [ ] T042 [US2] 参加者 Server Actions の統合テスト `tests/integration/participant-actions.test.ts` を作成する。test-cases.md セクション 2.2 の INT-P001〜INT-P011 の全 11 ケースを実装する。テスト用 DB に接続する。各テストの前にイベントを 1 件作成する `beforeEach` を設定する。テストケースの例: (1) createParticipant で参加者が DB に追加されること (2) 参加費がイベント標準レートと独立して保存されること (3) updatePaymentStatus で決済日・確認者が設定されること (4) bulkUpdatePaymentStatus で複数名が一括更新されること (5) 100 名登録しても全て成功すること。**実行して全テストが FAIL することを確認する**
+- [x] T042 [US2] 参加者 Server Actions の統合テスト `tests/integration/participant-actions.test.ts` を作成する。test-cases.md セクション 2.2 の INT-P001〜INT-P011 の全 11 ケースを実装する。テスト用 DB に接続する。各テストの前にイベントを 1 件作成する `beforeEach` を設定する。テストケースの例: (1) createParticipant で参加者が DB に追加されること (2) 参加費がイベント標準レートと独立して保存されること (3) updatePaymentStatus で決済日・確認者が設定されること (4) bulkUpdatePaymentStatus で複数名が一括更新されること (5) 100 名登録しても全て成功すること。**実行して全テストが FAIL することを確認する**
 
-- [ ] T043 [P] [US2] データ取得関数の統合テストを `tests/integration/queries.test.ts` に追加する。test-cases.md セクション 2.3 の INT-Q007〜INT-Q011（参加者関連）を追加する。テストケースの例: (1) getEventDetail で収支サマリーが calculateEventFinancials と一致すること (2) getAllParticipants で全イベントの参加者が取得できること (3) 氏名フィルタで部分一致検索できること (4) 取得結果に name, eventId, gender, fee, paymentStatus が含まれること。**実行して全テストが FAIL することを確認する**
+- [x] T043 [P] [US2] データ取得関数の統合テストを `tests/integration/queries.test.ts` に追加する。test-cases.md セクション 2.3 の INT-Q007〜INT-Q011（参加者関連）を追加する。テストケースの例: (1) getEventDetail で収支サマリーが calculateEventFinancials と一致すること (2) getAllParticipants で全イベントの参加者が取得できること (3) 氏名フィルタで部分一致検索できること (4) 取得結果に name, eventId, gender, fee, paymentStatus が含まれること。**実行して全テストが FAIL することを確認する**
 
 ### TDD Step 4: Server Actions & クエリ実装（GREEN）
 
-- [ ] T044 [US2] 参加者データ取得関数 `src/queries/participant-queries.ts` を実装する。contracts/api.md の「参加者関連」セクションの契約に従う。`getAllParticipants()` 関数を実装する: nameFilter（部分一致、Prisma の `contains` を使用）と includeDeleted のオプションを受け取る。戻り値は `ParticipantWithEventId[]` 型
+- [x] T044 [US2] 参加者データ取得関数 `src/queries/participant-queries.ts` を実装する。contracts/api.md の「参加者関連」セクションの契約に従う。`getAllParticipants()` 関数を実装する: nameFilter（部分一致、Prisma の `contains` を使用）と includeDeleted のオプションを受け取る。戻り値は `ParticipantWithEventId[]` 型
 
-- [ ] T045 [US2] 参加者 Server Actions `src/actions/participant-actions.ts` を実装する。ファイル先頭に `"use server";` を記述する。contracts/api.md の契約に従い、以下の 6 つの関数を実装する:
+- [x] T045 [US2] 参加者 Server Actions `src/actions/participant-actions.ts` を実装する。ファイル先頭に `"use server";` を記述する。contracts/api.md の契約に従い、以下の 6 つの関数を実装する:
   - `createParticipant(eventId, formData)`: Zod でバリデーション → prisma.participant.create() → revalidatePath
   - `updateParticipant(participantId, formData)`: Zod でバリデーション → prisma.participant.update() → revalidatePath
   - `deleteParticipant(participantId)`: isDeleted を true に → revalidatePath
@@ -216,27 +216,27 @@
   - `updatePaymentStatus(participantId, status, paymentDate?, confirmedBy?)`: PAID の場合は paymentDate と paymentConfirmedBy を設定。UNPAID に戻す場合は null にクリア → revalidatePath
   - `bulkUpdatePaymentStatus(participantIds, paymentDate, confirmedBy)`: prisma.$transaction 内で全参加者を PAID に一括更新 → revalidatePath
 
-- [ ] T046 [US2] 統合テストが PASS することを確認する。`npm run test:run tests/integration/participant-actions.test.ts` と `npm run test:run tests/integration/queries.test.ts`（参加者関連テストを含む）を実行し、全テストが PASS になることを確認する
+- [x] T046 [US2] 統合テストが PASS することを確認する。`npm run test:run tests/integration/participant-actions.test.ts` と `npm run test:run tests/integration/queries.test.ts`（参加者関連テストを含む）を実行し、全テストが PASS になることを確認する
 
 ### TDD Step 5: UI コンポーネント実装
 
-- [ ] T047 [P] [US2] 参加者登録フォームコンポーネント `src/components/participants/participant-form.tsx` を作成する。`"use client"` を指定する。React Hook Form + Zod の zodResolver を使用する。フォームフィールド: 氏名（text input）、性別（Select: 男性/女性）、参加費（number input、円）、決済状況（Select: 済/未）、決済日（date input、任意）、決済確認者（text input、任意）、メモ（textarea、任意）。props として `eventId: string` と `defaultValues?`（編集時）を受け取る。保存ボタンで createParticipant または updateParticipant を呼び出す
+- [x] T047 [P] [US2] 参加者登録フォームコンポーネント `src/components/participants/participant-form.tsx` を作成する。`"use client"` を指定する。React Hook Form + Zod の zodResolver を使用する。フォームフィールド: 氏名（text input）、性別（Select: 男性/女性）、参加費（number input、円）、決済状況（Select: 済/未）、決済日（date input、任意）、決済確認者（text input、任意）、メモ（textarea、任意）。props として `eventId: string` と `defaultValues?`（編集時）を受け取る。保存ボタンで createParticipant または updateParticipant を呼び出す
 
-- [ ] T048 [P] [US2] 決済状況セルコンポーネント `src/components/participants/payment-status-cell.tsx` を作成する。`"use client"` を指定する。参加者 1 名分の決済状況を表示し、クリックで済/未を切り替えられる。「済」に変更する場合は、インラインで決済日（デフォルト: 今日）と確認者名の入力を求める。updatePaymentStatus Server Action を呼び出す
+- [x] T048 [P] [US2] 決済状況セルコンポーネント `src/components/participants/payment-status-cell.tsx` を作成する。`"use client"` を指定する。参加者 1 名分の決済状況を表示し、クリックで済/未を切り替えられる。「済」に変更する場合は、インラインで決済日（デフォルト: 今日）と確認者名の入力を求める。updatePaymentStatus Server Action を呼び出す
 
-- [ ] T049 [P] [US2] 一括決済更新ダイアログコンポーネント `src/components/participants/bulk-payment-dialog.tsx` を作成する。`"use client"` を指定する。shadcn/ui の Dialog を使用する。props として `participants`（未決済の参加者リスト）を受け取る。チェックボックスで参加者を選択し、決済日（date input）と確認者名（text input）を入力して「一括更新」ボタンで bulkUpdatePaymentStatus を呼び出す
+- [x] T049 [P] [US2] 一括決済更新ダイアログコンポーネント `src/components/participants/bulk-payment-dialog.tsx` を作成する。`"use client"` を指定する。shadcn/ui の Dialog を使用する。props として `participants`（未決済の参加者リスト）を受け取る。チェックボックスで参加者を選択し、決済日（date input）と確認者名（text input）を入力して「一括更新」ボタンで bulkUpdatePaymentStatus を呼び出す
 
-- [ ] T050 [US2] 参加者一覧テーブルコンポーネント `src/components/participants/participant-table.tsx` を作成する。`"use client"` を指定する。TanStack Table を使用する。列定義: 選択チェックボックス、氏名、性別（Badge）、参加費（¥ フォーマット）、決済状況（PaymentStatusCell）、決済日、確認者、メモ。「削除済みを表示」トグルを含める。テーブル上部に氏名検索フィールド（FR-009）を配置する。選択した参加者に対する「一括決済」ボタンを配置する
+- [x] T050 [US2] 参加者一覧テーブルコンポーネント `src/components/participants/participant-table.tsx` を作成する。`"use client"` を指定する。TanStack Table を使用する。列定義: 選択チェックボックス、氏名、性別（Badge）、参加費（¥ フォーマット）、決済状況（PaymentStatusCell）、決済日、確認者、メモ。「削除済みを表示」トグルを含める。テーブル上部に氏名検索フィールド（FR-009）を配置する。選択した参加者に対する「一括決済」ボタンを配置する
 
-- [ ] T051 [US2] イベント詳細画面（`src/app/events/[id]/page.tsx` と `src/components/events/event-detail.tsx`）を更新する。参加者一覧テーブル（`<ParticipantTable>`）を追加する。収支サマリー（見込み収入・決済済み収入・未回収・見込み利益・実現利益・利益率）を表示するセクションを追加する。「参加者追加」ボタンを配置し、クリックで参加者登録フォームを表示する（アコーディオンまたはインラインフォーム）
+- [x] T051 [US2] イベント詳細画面（`src/app/events/[id]/page.tsx` と `src/components/events/event-detail.tsx`）を更新する。参加者一覧テーブル（`<ParticipantTable>`）を追加する。収支サマリー（見込み収入・決済済み収入・未回収・見込み利益・実現利益・利益率）を表示するセクションを追加する。「参加者追加」ボタンを配置し、クリックで参加者登録フォームを表示する（アコーディオンまたはインラインフォーム）
 
-- [ ] T052 [US2] 全イベント横断参加者一覧ページ `src/app/participants/page.tsx` を実装する。Server Component として実装する。`getAllParticipants()` でデータを取得する。表示列: 氏名、所属イベント ID（リンク）、性別、参加費、決済状況。氏名検索フィールドを配置する（URL クエリパラメータ `name` でフィルタ）。TanStack Table を使用した専用テーブルコンポーネント `src/components/participants/cross-event-participant-table.tsx` を作成する
+- [x] T052 [US2] 全イベント横断参加者一覧ページ `src/app/participants/page.tsx` を実装する。Server Component として実装する。`getAllParticipants()` でデータを取得する。表示列: 氏名、所属イベント ID（リンク）、性別、参加費、決済状況。氏名検索フィールドを配置する（URL クエリパラメータ `name` でフィルタ）。TanStack Table を使用した専用テーブルコンポーネント `src/components/participants/cross-event-participant-table.tsx` を作成する
 
 **Checkpoint**: 参加者の登録・編集・削除・復元が動作すること。決済状況の個別更新・一括更新が動作すること。収支サマリーが自動計算されること。全横断参加者一覧で氏名検索ができること。`npm run test:run` で全ユニットテスト・統合テストが PASS。
 
 ### 🔍 Chrome MCP 動作確認
 
-- [ ] T052a [US2] Chrome DevTools MCP を使って参加者・決済管理の動作を確認する。以下の操作を MCP ツールで実行する:
+- [x] T052a [US2] Chrome DevTools MCP を使って参加者・決済管理の動作を確認する。以下の操作を MCP ツールで実行する:
   1. `navigate_page` で Phase 3 で作成したイベントの詳細ページ（`/events/[id]`）にアクセスする。`take_screenshot` でイベント詳細と空の参加者一覧が表示されていることを確認する
   2. 「参加者追加」ボタンを `click` し、参加者登録フォームが表示されることを確認する。`fill_form` で以下を入力: 氏名=テスト太郎、性別=男性、参加費=6000、決済状況=未。登録ボタンを `click` する
   3. 同様に 2 名目を登録する: 氏名=テスト花子、性別=女性、参加費=4000、決済状況=未。`take_screenshot` で参加者一覧に 2 名が表示され、収支サマリー（見込み収入・未回収等）が自動計算されていることを確認する

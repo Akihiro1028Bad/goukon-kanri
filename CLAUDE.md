@@ -28,7 +28,7 @@
 
 | レイヤー | 技術 | バージョン |
 |---------|------|-----------|
-| フレームワーク | Next.js (App Router) | 15.x |
+| フレームワーク | Next.js (App Router) | 16.x |
 | 言語 | TypeScript (strict: true) | 5.x |
 | ランタイム | Node.js | 20.x |
 | ORM | Prisma + @prisma/adapter-pg | 6.x |
@@ -99,7 +99,7 @@ src/
 
 ## コーディング規約
 
-### Next.js 15 App Router
+### Next.js App Router (Next.js 16)
 
 - **Server Component がデフォルト**。`useState`/`useEffect`/`onClick` 等が必要な場合のみ `"use client"` を付与する
 - **データ取得は Server Component 内で直接行う**（`src/queries/` の関数を呼び出す）
