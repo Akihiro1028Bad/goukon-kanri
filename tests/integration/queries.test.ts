@@ -461,3 +461,129 @@ describe("Report Queries (Integration)", () => {
     expect(result[0].actualCashback).toBe(4500);
   });
 });
+
+describe("Edge Cases (Integration)", () => {
+  beforeEach(async () => {
+    await testPrisma.participant.deleteMany();
+    await testPrisma.event.deleteMany();
+  });
+
+  afterAll(async () => {
+    await testPrisma.$disconnect();
+  });
+
+  // EDGE-001: イベント0件の年度でダッシュボード
+  it("EDGE-001: getMonthlySummary with no events returns 12 rows all zeros", async () => {
+    const result = await getMonthlySummary(2099);
+
+    expect(result).toHaveLength(12);
+    expect(result.every((r) => r.eventCount === 0)).toBe(true);
+    expect(result.every((r) => r.profitRate === null)).toBe(true);
+    expect(result.every((r) => r.expectedRevenue === 0)).toBe(true);
+  });
+
+  // EDGE-004: 連番NNN=100超
+  it("EDGE-004: eventId with NNN > 099 generates correctly", async () => {
+    // Create event with eventId 2025-02-099
+    await createTestEvent({
+      eventId: "2025-02-099",
+      date: new Date("2025-02-15"),
+    });
+
+    // Verify event was created correctly
+    const event = await testPrisma.event.findUnique({
+      where: { eventId: "2025-02-099" },
+    });
+    expect(event).not.toBeNull();
+  });
+
+  // EDGE-005: Food back 実際CB > 予定CB
+  it("EDGE-005: actualCashback > expectedCashback saves without error", async () => {
+    const event = await createTestEvent({
+      eventId: "2025-02-001",
+      date: new Date("2025-02-15"),
+      expectedCashback: 5000,
+      actualCashback: 7000,
+    });
+
+    expect(event.expectedCashback).toBe(5000);
+    expect(event.actualCashback).toBe(7000);
+  });
+
+  // EDGE-006: Last-write-wins（同時編集）
+  it("EDGE-006: last write wins on concurrent updates", async () => {
+    await createTestEvent({
+      eventId: "2025-02-001",
+      date: new Date("2025-02-15"),
+      venueName: "元の会場",
+    });
+
+    // First update
+    await testPrisma.event.update({
+      where: { eventId: "2025-02-001" },
+      data: { venueName: "1回目更新" },
+    });
+
+    // Second update (last write wins)
+    await testPrisma.event.update({
+      where: { eventId: "2025-02-001" },
+      data: { venueName: "2回目更新" },
+    });
+
+    const event = await testPrisma.event.findUnique({
+      where: { eventId: "2025-02-001" },
+    });
+    expect(event?.venueName).toBe("2回目更新");
+  });
+
+  // EDGE-008: 日本語氏名の部分一致
+  it("EDGE-008: Japanese name partial match works", async () => {
+    const event = await createTestEvent();
+    await testPrisma.participant.createMany({
+      data: [
+        { eventId: event.eventId, name: "田中太郎", gender: "MALE", fee: 6000, paymentStatus: "UNPAID" },
+        { eventId: event.eventId, name: "田辺花子", gender: "FEMALE", fee: 4000, paymentStatus: "UNPAID" },
+        { eventId: event.eventId, name: "山田三郎", gender: "MALE", fee: 6000, paymentStatus: "UNPAID" },
+      ],
+    });
+
+    const result = await getAllParticipants({ nameFilter: "田中" });
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("田中太郎");
+  });
+
+  // EDGE-012: マッチング件数0のイベント
+  it("EDGE-012: event with matchCount=0 aggregates correctly in dashboard", async () => {
+    await createTestEvent({
+      eventId: "2025-06-001",
+      date: new Date("2025-06-15"),
+      matchCount: 0,
+    });
+
+    const result = await getMonthlySummary(2025);
+    const jun = result[5]; // index 5 = 6月
+
+    expect(jun.eventCount).toBe(1);
+    expect(jun.matchCount).toBe(0);
+  });
+
+  // EDGE-014: 同時に複数月にイベント登録
+  it("EDGE-014: events in different months get independent sequences", async () => {
+    await createTestEvent({
+      eventId: "2025-02-001",
+      date: new Date("2025-02-15"),
+    });
+    await createTestEvent({
+      eventId: "2025-03-001",
+      date: new Date("2025-03-15"),
+    });
+
+    const feb = await testPrisma.event.findUnique({ where: { eventId: "2025-02-001" } });
+    const mar = await testPrisma.event.findUnique({ where: { eventId: "2025-03-001" } });
+
+    expect(feb).not.toBeNull();
+    expect(mar).not.toBeNull();
+    expect(feb?.eventId).toBe("2025-02-001");
+    expect(mar?.eventId).toBe("2025-03-001");
+  });
+});

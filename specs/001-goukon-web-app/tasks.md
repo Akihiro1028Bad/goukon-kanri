@@ -358,9 +358,9 @@
 
 ### Edge Case テスト
 
-- [ ] T068 [P] Edge Case ユニットテスト `tests/unit/edge-cases.test.ts` を作成する。test-cases.md セクション 4.1 の EDGE-002, EDGE-003, EDGE-007, EDGE-009〜EDGE-011, EDGE-013 の 7 ケースを実装する。テストケースの例: (1) 参加費 0 円で登録・集計が正常 (2) 見込み収入 0 円でゼロ除算なし (3) 空文字の氏名検索で全参加者が返ること (4) うるう年 2 月 29 日のイベント ID (5) 全参加者が論理削除された場合の収支
+- [x] T068 [P] Edge Case ユニットテスト `tests/unit/edge-cases.test.ts` を作成する。test-cases.md セクション 4.1 の EDGE-002, EDGE-003, EDGE-007, EDGE-009〜EDGE-011, EDGE-013 の 7 ケースを実装する。テストケースの例: (1) 参加費 0 円で登録・集計が正常 (2) 見込み収入 0 円でゼロ除算なし (3) 空文字の氏名検索で全参加者が返ること (4) うるう年 2 月 29 日のイベント ID (5) 全参加者が論理削除された場合の収支
 
-- [ ] T069 [P] Edge Case 統合テストを `tests/integration/queries.test.ts` に追加する。test-cases.md セクション 4.1 の EDGE-001, EDGE-004〜EDGE-006, EDGE-008, EDGE-012, EDGE-014 の 7 ケースを追加する。テストケースの例: (1) イベント 0 件の年度でダッシュボード (2) NNN=100 超の採番 (3) Food back 実際 CB > 予定 CB (4) 同時編集で Last-write-wins (5) 日本語氏名の部分一致
+- [x] T069 [P] Edge Case 統合テストを `tests/integration/queries.test.ts` に追加する。test-cases.md セクション 4.1 の EDGE-001, EDGE-004〜EDGE-006, EDGE-008, EDGE-012, EDGE-014 の 7 ケースを追加する。テストケースの例: (1) イベント 0 件の年度でダッシュボード (2) NNN=100 超の採番 (3) Food back 実際 CB > 予定 CB (4) 同時編集で Last-write-wins (5) 日本語氏名の部分一致
 
 ### E2E テスト
 
