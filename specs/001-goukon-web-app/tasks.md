@@ -257,25 +257,25 @@
 
 ### TDD Step 1: 統合テストを先に書く（RED）
 
-- [ ] T053 [US3] ダッシュボードクエリの統合テストを `tests/integration/queries.test.ts` に追加する。test-cases.md セクション 2.3 の INT-Q012〜INT-Q014, INT-Q017 の 4 ケースを追加する。テストケースの例: (1) getMonthlySummary(2025) で 12 行が返ること (2) 各月のイベント数・参加者数・収支が正確であること (3) イベント 0 件の月は全て 0/null であること (4) 年度切替で異なる年のデータのみ取得されること (5) マッチング件数が月別に正しく集計されること。**実行して全テストが FAIL することを確認する**
+- [x] T053 [US3] ダッシュボードクエリの統合テストを `tests/integration/queries.test.ts` に追加する。test-cases.md セクション 2.3 の INT-Q012〜INT-Q014, INT-Q017 の 4 ケースを追加する。テストケースの例: (1) getMonthlySummary(2025) で 12 行が返ること (2) 各月のイベント数・参加者数・収支が正確であること (3) イベント 0 件の月は全て 0/null であること (4) 年度切替で異なる年のデータのみ取得されること (5) マッチング件数が月別に正しく集計されること。**実行して全テストが FAIL することを確認する**
 
 ### TDD Step 2: クエリ実装（GREEN）
 
-- [ ] T054 [US3] ダッシュボード集計クエリ `src/queries/dashboard-queries.ts` を実装する。contracts/api.md の「ダッシュボード関連」セクションの契約に従う。`getMonthlySummary(year: number)` 関数を実装する。処理フロー: (1) 指定年の全イベント（論理削除除く）を Prisma で取得（participants を include） (2) 月別にグループ化（1〜12 月） (3) 各月のイベントに対して calculateEventFinancials() で収支を計算 (4) 月別に集計（eventCount, maleCount, femaleCount, venueCost（当月イベントの会場費合算）, expectedRevenue, paidRevenue, uncollected, expectedProfit, actualProfit, profitRate（月全体の見込み利益÷見込み収入×100、見込み収入0なら null）, matchCount（当月イベントの matchCount 合算）） (5) イベント 0 件の月は全て 0、profitRate は null として 12 行を返す。実装後、統合テストが PASS することを確認する
+- [x] T054 [US3] ダッシュボード集計クエリ `src/queries/dashboard-queries.ts` を実装する。contracts/api.md の「ダッシュボード関連」セクションの契約に従う。`getMonthlySummary(year: number)` 関数を実装する。処理フロー: (1) 指定年の全イベント（論理削除除く）を Prisma で取得（participants を include） (2) 月別にグループ化（1〜12 月） (3) 各月のイベントに対して calculateEventFinancials() で収支を計算 (4) 月別に集計（eventCount, maleCount, femaleCount, venueCost（当月イベントの会場費合算）, expectedRevenue, paidRevenue, uncollected, expectedProfit, actualProfit, profitRate（月全体の見込み利益÷見込み収入×100、見込み収入0なら null）, matchCount（当月イベントの matchCount 合算）） (5) イベント 0 件の月は全て 0、profitRate は null として 12 行を返す。実装後、統合テストが PASS することを確認する
 
 ### TDD Step 3: UI コンポーネント実装
 
-- [ ] T055 [P] [US3] 月別サマリーテーブルコンポーネント `src/components/dashboard/monthly-summary-table.tsx` を作成する。plan.md の「ダッシュボード月別サマリーテーブルの実装パターン」セクションの実装をベースにする。`"use client"` を指定する。props として `year: number` と `rows: MonthlySummaryRow[]` を受け取る。列: 月（リンク: `/events?year=${year}&month=${month}`）、件数、男性、女性、会場費、見込み収入、決済済み、未回収、見込み利益、実現利益、利益率、マッチング。金額は `¥` + カンマ区切りで表示する。利益率は小数第 1 位まで表示（null の場合は "-"）
+- [x] T055 [P] [US3] 月別サマリーテーブルコンポーネント `src/components/dashboard/monthly-summary-table.tsx` を作成する。plan.md の「ダッシュボード月別サマリーテーブルの実装パターン」セクションの実装をベースにする。`"use client"` を指定する。props として `year: number` と `rows: MonthlySummaryRow[]` を受け取る。列: 月（リンク: `/events?year=${year}&month=${month}`）、件数、男性、女性、会場費、見込み収入、決済済み、未回収、見込み利益、実現利益、利益率、マッチング。金額は `¥` + カンマ区切りで表示する。利益率は小数第 1 位まで表示（null の場合は "-"）
 
-- [ ] T056 [P] [US3] 年度切替セレクターコンポーネント `src/components/dashboard/year-selector.tsx` を作成する。`"use client"` を指定する。shadcn/ui の Select を使用する。選択肢: 現在年 ± 5 年の範囲。初期値: URL クエリパラメータの `year`（デフォルト: 現在年）。年度を変更すると `router.push(/?year=${selectedYear})` でページを再読み込みする
+- [x] T056 [P] [US3] 年度切替セレクターコンポーネント `src/components/dashboard/year-selector.tsx` を作成する。`"use client"` を指定する。shadcn/ui の Select を使用する。選択肢: 現在年 ± 5 年の範囲。初期値: URL クエリパラメータの `year`（デフォルト: 現在年）。年度を変更すると `router.push(/?year=${selectedYear})` でページを再読み込みする
 
-- [ ] T057 [US3] ダッシュボードページ `src/app/page.tsx` を実装する。Server Component として実装する。URL クエリパラメータから `year`（デフォルト: 現在年）を取得する。`getMonthlySummary(year)` でデータを取得する。ページタイトル「ダッシュボード」、`<YearSelector>` と `<MonthlySummaryTable>` を配置する
+- [x] T057 [US3] ダッシュボードページ `src/app/page.tsx` を実装する。Server Component として実装する。URL クエリパラメータから `year`（デフォルト: 現在年）を取得する。`getMonthlySummary(year)` でデータを取得する。ページタイトル「ダッシュボード」、`<YearSelector>` と `<MonthlySummaryTable>` を配置する
 
 **Checkpoint**: ダッシュボードに月別サマリーが表示されること。年度切替で表示が更新されること。月クリックでイベント一覧に遷移すること。`npm run test:run` で全テストが PASS。
 
 ### 🔍 Chrome MCP 動作確認
 
-- [ ] T057a [US3] Chrome DevTools MCP を使ってダッシュボードの動作を確認する。以下の操作を MCP ツールで実行する:
+- [x] T057a [US3] Chrome DevTools MCP を使ってダッシュボードの動作を確認する。以下の操作を MCP ツールで実行する:
   1. `navigate_page` で `/`（ダッシュボード）にアクセスする。`take_screenshot` で月別サマリーテーブルが 1 月〜12 月の 12 行表示されていることを確認する
   2. Phase 3・4 で登録したイベント・参加者のデータが、該当月の行に正しく集計されていることを確認する（イベント数、男女参加者数、見込み収入、決済済み収入、利益率等）
   3. イベントが 0 件の月の行が全て 0 / "-" で表示されていることを確認する

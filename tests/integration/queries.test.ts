@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { PrismaClient } from "@prisma/client";
 import { getEvents, getEventDetail } from "@/queries/event-queries";
 import { getAllParticipants } from "@/queries/participant-queries";
+import { getMonthlySummary } from "@/queries/dashboard-queries";
 import { calculateEventFinancials } from "@/lib/calculations";
 
 const testPrisma = new PrismaClient({
@@ -280,5 +281,134 @@ describe("Participant Queries (Integration)", () => {
     expect(result[0]).toHaveProperty("gender", "MALE");
     expect(result[0]).toHaveProperty("fee", 6000);
     expect(result[0]).toHaveProperty("paymentStatus", "PAID");
+  });
+});
+
+describe("Dashboard Queries (Integration)", () => {
+  beforeEach(async () => {
+    await testPrisma.participant.deleteMany();
+    await testPrisma.event.deleteMany();
+  });
+
+  afterAll(async () => {
+    await testPrisma.$disconnect();
+  });
+
+  // INT-Q012: getMonthlySummary returns 12 rows with correct aggregation
+  it("INT-Q012: getMonthlySummary returns 12 rows with correct monthly aggregation", async () => {
+    // 2月にイベント1件、3月にイベント2件を作成
+    const event1 = await createTestEvent({
+      eventId: "2025-02-001",
+      date: new Date("2025-02-15"),
+      maleFee: 6000,
+      femaleFee: 4000,
+      venueCost: 10000,
+      matchCount: 2,
+    });
+    await testPrisma.participant.createMany({
+      data: [
+        { eventId: event1.eventId, name: "太郎", gender: "MALE", fee: 6000, paymentStatus: "PAID" },
+        { eventId: event1.eventId, name: "花子", gender: "FEMALE", fee: 4000, paymentStatus: "UNPAID" },
+      ],
+    });
+
+    const event2 = await createTestEvent({
+      eventId: "2025-03-001",
+      date: new Date("2025-03-10"),
+      maleFee: 5000,
+      femaleFee: 3000,
+      venueCost: 8000,
+      matchCount: 1,
+    });
+    await testPrisma.participant.create({
+      data: { eventId: event2.eventId, name: "次郎", gender: "MALE", fee: 5000, paymentStatus: "PAID" },
+    });
+
+    const result = await getMonthlySummary(2025);
+
+    expect(result).toHaveLength(12);
+
+    // 2月: イベント1件、男1名、女1名
+    const feb = result[1]; // index 1 = 2月
+    expect(feb.month).toBe(2);
+    expect(feb.eventCount).toBe(1);
+    expect(feb.maleCount).toBe(1);
+    expect(feb.femaleCount).toBe(1);
+    expect(feb.venueCost).toBe(10000);
+    expect(feb.expectedRevenue).toBe(10000); // 6000*1 + 4000*1
+    expect(feb.paidRevenue).toBe(6000);
+    expect(feb.matchCount).toBe(2);
+
+    // 3月: イベント1件、男1名
+    const mar = result[2]; // index 2 = 3月
+    expect(mar.month).toBe(3);
+    expect(mar.eventCount).toBe(1);
+    expect(mar.maleCount).toBe(1);
+    expect(mar.femaleCount).toBe(0);
+    expect(mar.matchCount).toBe(1);
+  });
+
+  // INT-Q013: イベント0件の月は全て0・profitRateがnull
+  it("INT-Q013: months with no events have all zeros and null profitRate", async () => {
+    // 2月のみにイベントを作成
+    await createTestEvent({
+      eventId: "2025-02-001",
+      date: new Date("2025-02-15"),
+    });
+
+    const result = await getMonthlySummary(2025);
+
+    // 1月（イベントなし）
+    const jan = result[0];
+    expect(jan.month).toBe(1);
+    expect(jan.eventCount).toBe(0);
+    expect(jan.maleCount).toBe(0);
+    expect(jan.femaleCount).toBe(0);
+    expect(jan.venueCost).toBe(0);
+    expect(jan.expectedRevenue).toBe(0);
+    expect(jan.paidRevenue).toBe(0);
+    expect(jan.profitRate).toBeNull();
+    expect(jan.matchCount).toBe(0);
+  });
+
+  // INT-Q014: 年度切替で異なる年のデータのみ取得
+  it("INT-Q014: year filter returns only that year's data", async () => {
+    await createTestEvent({
+      eventId: "2025-06-001",
+      date: new Date("2025-06-15"),
+    });
+    await createTestEvent({
+      eventId: "2026-06-001",
+      date: new Date("2026-06-15"),
+    });
+
+    const result2025 = await getMonthlySummary(2025);
+    const result2026 = await getMonthlySummary(2026);
+
+    const total2025 = result2025.reduce((sum, r) => sum + r.eventCount, 0);
+    const total2026 = result2026.reduce((sum, r) => sum + r.eventCount, 0);
+
+    expect(total2025).toBe(1);
+    expect(total2026).toBe(1);
+  });
+
+  // INT-Q017: マッチング件数が月別に正しく集計
+  it("INT-Q017: matchCount is correctly aggregated per month", async () => {
+    await createTestEvent({
+      eventId: "2025-03-001",
+      date: new Date("2025-03-10"),
+      matchCount: 3,
+    });
+    await createTestEvent({
+      eventId: "2025-03-002",
+      date: new Date("2025-03-20"),
+      matchCount: 5,
+    });
+
+    const result = await getMonthlySummary(2025);
+    const mar = result[2];
+
+    expect(mar.eventCount).toBe(2);
+    expect(mar.matchCount).toBe(8); // 3 + 5
   });
 });

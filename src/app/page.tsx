@@ -1,8 +1,28 @@
-export default function DashboardPage() {
+import { getMonthlySummary } from "@/queries/dashboard-queries";
+import { MonthlySummaryTable } from "@/components/dashboard/monthly-summary-table";
+import { YearSelector } from "@/components/dashboard/year-selector";
+
+export const metadata = {
+  title: "ダッシュボード",
+};
+
+type Props = {
+  searchParams: Promise<{ year?: string }>;
+};
+
+export default async function DashboardPage({ searchParams }: Props) {
+  const { year: yearParam } = await searchParams;
+  const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear();
+
+  const rows = await getMonthlySummary(year);
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold">ダッシュボード</h1>
-      <p className="mt-2 text-gray-500">準備中</p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">ダッシュボード</h1>
+        <YearSelector currentYear={year} />
+      </div>
+      <MonthlySummaryTable year={year} rows={rows} />
     </div>
   );
 }
