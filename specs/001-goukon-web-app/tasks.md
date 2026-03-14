@@ -294,25 +294,25 @@
 
 ### TDD Step 1: ユニットテストを先に書く（RED）
 
-- [ ] T058 [P] [US4] LINE 募集テキスト生成のユニットテスト `tests/unit/line-text.test.ts` を作成する。test-cases.md セクション 1.3 の LINE-001〜LINE-011 の全 11 ケースを実装する。テスト対象は `src/lib/line-text.ts` の `generateLineText()` 関数。テストケースの例: (1) 全フィールド入力で固定順序のテキストが生成されること (2) 曜日が自動算出されること（2025-03-15 → 土） (3) 残枠が正しく計算されること（定員 - 現在参加者数） (4) テーマが null の場合テーマ行が省略されること (5) 金額がカンマ区切りで表示されること (6) 項目の順序が固定であること。**実行して全テストが FAIL することを確認する**
+- [x] T058 [P] [US4] LINE 募集テキスト生成のユニットテスト `tests/unit/line-text.test.ts` を作成する。test-cases.md セクション 1.3 の LINE-001〜LINE-011 の全 11 ケースを実装する。テスト対象は `src/lib/line-text.ts` の `generateLineText()` 関数。テストケースの例: (1) 全フィールド入力で固定順序のテキストが生成されること (2) 曜日が自動算出されること（2025-03-15 → 土） (3) 残枠が正しく計算されること（定員 - 現在参加者数） (4) テーマが null の場合テーマ行が省略されること (5) 金額がカンマ区切りで表示されること (6) 項目の順序が固定であること。**実行して全テストが FAIL することを確認する**
 
 ### TDD Step 2: ビジネスロジック実装（GREEN）
 
-- [ ] T059 [US4] LINE 募集テキスト生成ロジック `src/lib/line-text.ts` を実装する。contracts/api.md の「LINE 募集テキスト生成」セクションの契約とフォーマット例に従う。`generateLineText()` 関数を実装する。固定フォーマット（順序固定）: 📅 日付（曜日） → ⏰ 時刻〜 → 📍 エリア / 会場名 → 👫 男性N名 / 女性N名 → 💰 男性 X,XXX円 / 女性 X,XXX円 → 🎯 テーマ（null なら省略） → 💼 対象（null なら省略） → ✅ 残枠。曜日は `date-fns` の `format` を使用して算出する。金額はカンマ区切り。残枠は `定員 - 現在参加者数`（負の場合は「残枠なし」等）。実装後、`npm run test:run tests/unit/line-text.test.ts` で LINE-001〜011 の全 11 テストが PASS になることを確認する
+- [x] T059 [US4] LINE 募集テキスト生成ロジック `src/lib/line-text.ts` を実装する。contracts/api.md の「LINE 募集テキスト生成」セクションの契約とフォーマット例に従う。`generateLineText()` 関数を実装する。固定フォーマット（順序固定）: 📅 日付（曜日） → ⏰ 時刻〜 → 📍 エリア / 会場名 → 👫 男性N名 / 女性N名 → 💰 男性 X,XXX円 / 女性 X,XXX円 → 🎯 テーマ（null なら省略） → 💼 対象（null なら省略） → ✅ 残枠。曜日は `date-fns` の `format` を使用して算出する。金額はカンマ区切り。残枠は `定員 - 現在参加者数`（負の場合は「残枠なし」等）。実装後、`npm run test:run tests/unit/line-text.test.ts` で LINE-001〜011 の全 11 テストが PASS になることを確認する
 
 ### TDD Step 3: UI コンポーネント実装
 
-- [ ] T060 [P] [US4] LINE テキストプレビューモーダルコンポーネント `src/components/schedule/line-text-dialog.tsx` を作成する。plan.md の「LINE テキストプレビューモーダルの実装パターン」セクションの実装をベースにする。`"use client"` を指定する。shadcn/ui の Dialog を使用する。props として event 情報と現在の参加者状況を受け取る。`generateLineText()` でテキストを生成し、`<pre>` タグで表示する。「コピー」ボタンで `navigator.clipboard.writeText()` を呼び出し、成功時に toast.success("クリップボードにコピーしました") を表示する。clipboard API が使えない場合は textarea 経由のフォールバックを実装する
+- [x] T060 [P] [US4] LINE テキストプレビューモーダルコンポーネント `src/components/schedule/line-text-dialog.tsx` を作成する。plan.md の「LINE テキストプレビューモーダルの実装パターン」セクションの実装をベースにする。`"use client"` を指定する。shadcn/ui の Dialog を使用する。props として event 情報と現在の参加者状況を受け取る。`generateLineText()` でテキストを生成し、`<pre>` タグで表示する。「コピー」ボタンで `navigator.clipboard.writeText()` を呼び出し、成功時に toast.success("クリップボードにコピーしました") を表示する。clipboard API が使えない場合は textarea 経由のフォールバックを実装する
 
-- [ ] T061 [P] [US4] スケジュール一覧テーブルコンポーネント `src/components/schedule/schedule-table.tsx` を作成する。`"use client"` を指定する。TanStack Table を使用する。列定義: イベント ID（リンク）、日付、時刻、エリア、会場名、状態（Badge）、男性定員、女性定員、男性参加者数、女性参加者数、男性残枠、女性残枠、LINE テキスト生成ボタン。残枠は `定員 - 現在参加者数` で計算する。残枠が 0 以下の場合は赤字で表示する
+- [x] T061 [P] [US4] スケジュール一覧テーブルコンポーネント `src/components/schedule/schedule-table.tsx` を作成する。`"use client"` を指定する。TanStack Table を使用する。列定義: イベント ID（リンク）、日付、時刻、エリア、会場名、状態（Badge）、男性定員、女性定員、男性参加者数、女性参加者数、男性残枠、女性残枠、LINE テキスト生成ボタン。残枠は `定員 - 現在参加者数` で計算する。残枠が 0 以下の場合は赤字で表示する
 
-- [ ] T062 [US4] スケジュール一覧ページ `src/app/schedule/page.tsx` を実装する。Server Component として実装する。`getEvents()` で全イベント（参加者を include）を取得する。月・エリア・状態のフィルタ UI を配置する（URL クエリパラメータでフィルタ）。`<ScheduleTable>` にデータを渡す。フィルタコンポーネント `src/components/schedule/schedule-filters.tsx` を `"use client"` で作成する
+- [x] T062 [US4] スケジュール一覧ページ `src/app/schedule/page.tsx` を実装する。Server Component として実装する。`getEvents()` で全イベント（参加者を include）を取得する。月・エリア・状態のフィルタ UI を配置する（URL クエリパラメータでフィルタ）。`<ScheduleTable>` にデータを渡す。フィルタコンポーネント `src/components/schedule/schedule-filters.tsx` を `"use client"` で作成する
 
 **Checkpoint**: スケジュール一覧に全イベントが表示され、残枠が正確に計算されること。LINE テキスト生成ボタンからモーダルが開き、テキストがコピーできること。フィルタが動作すること。`npm run test:run` で全テストが PASS。
 
 ### 🔍 Chrome MCP 動作確認
 
-- [ ] T062a [US4] Chrome DevTools MCP を使ってスケジュール・LINE テキスト生成の動作を確認する。以下の操作を MCP ツールで実行する:
+- [x] T062a [US4] Chrome DevTools MCP を使ってスケジュール・LINE テキスト生成の動作を確認する。以下の操作を MCP ツールで実行する:
   1. `navigate_page` で `/schedule` にアクセスする。`take_screenshot` でスケジュール一覧テーブルが表示され、各イベントの男女別定員・参加者数・残枠が正しく表示されていることを確認する
   2. 残枠が 0 以下のイベントがあれば、赤字で表示されていることを確認する
   3. 「LINE テキスト生成」ボタンを `click` する。`take_screenshot` でモーダルが開き、固定フォーマットの募集テキスト（📅 日付、⏰ 時刻、📍 エリア/会場名、👫 定員、💰 参加費、✅ 残枠 等）がプレビュー表示されていることを確認する

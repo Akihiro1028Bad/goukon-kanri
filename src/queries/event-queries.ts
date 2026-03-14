@@ -4,6 +4,7 @@ import type { Event, Participant, EventStatus } from "@prisma/client";
 import type { FinancialSummary } from "@/types";
 
 export type EventWithSummary = Event & {
+  participants: Participant[];
   financials: FinancialSummary;
 };
 
