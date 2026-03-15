@@ -115,8 +115,13 @@ test("E2E-012: 一括決済で複数参加者を更新する", async ({ page }) 
   // Dialog should open - fill confirmation
   await page.waitForSelector('[data-slot="dialog-content"]');
   const dialog = page.locator('[data-slot="dialog-content"]');
-  await dialog.locator('input[placeholder="確認者名"]').fill("管理者");
-  await dialog.locator("button").filter({ hasText: "一括決済実行" }).click();
+
+  // Select all participants in dialog
+  const selectAllRow = dialog.locator("div").filter({ hasText: "全選択" }).first();
+  await selectAllRow.locator('[role="checkbox"]').first().click();
+
+  await dialog.locator('input[placeholder="確認者名を入力"]').fill("管理者");
+  await dialog.locator("button").filter({ hasText: "一括更新" }).click();
 
   // Wait and refresh
   await page.waitForTimeout(2000);

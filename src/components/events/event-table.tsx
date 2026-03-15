@@ -157,20 +157,36 @@ export function EventTable({ events }: Props) {
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className={
+                    aria-sort={
                       header.column.getCanSort()
-                        ? "cursor-pointer select-none"
-                        : ""
+                        ? header.column.getIsSorted() === "asc"
+                          ? "ascending"
+                          : header.column.getIsSorted() === "desc"
+                            ? "descending"
+                            : "none"
+                        : undefined
                     }
-                    onClick={header.column.getToggleSortingHandler()}
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
+                    {header.column.getCanSort() ? (
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 cursor-pointer select-none"
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {{ asc: "↑", desc: "↓" }[
+                          header.column.getIsSorted() as string
+                        ] ?? ""}
+                      </button>
+                    ) : (
+                      flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )
                     )}
-                    {{ asc: " ↑", desc: " ↓" }[
-                      header.column.getIsSorted() as string
-                    ] ?? ""}
                   </TableHead>
                 ))}
               </TableRow>

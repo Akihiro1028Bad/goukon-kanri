@@ -22,6 +22,7 @@ test("E2E-040: 収支レポートが全列で表示される", async ({ page }) 
   await page.fill('input[name="actualCashback"]', "2500");
   await page.click('button[type="submit"]');
   await page.waitForURL(/\/events\/2026-01-/);
+  const eventId = page.url().split("/").pop()!;
 
   // Go to reports
   await page.goto("/reports?year=2026");
@@ -29,8 +30,8 @@ test("E2E-040: 収支レポートが全列で表示される", async ({ page }) 
   // Table should be visible
   await expect(page.locator("table")).toBeVisible();
 
-  // Check that the event appears
-  await expect(page.locator("text=レポートテスト会場")).toBeVisible();
+  // Check that the created event appears
+  await expect(page.locator(`text=${eventId}`)).toBeVisible();
 
   // Check key column headers
   await expect(
@@ -53,6 +54,7 @@ test("E2E-041: レポートを年度・月でフィルタする", async ({ page 
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
   await page.waitForURL(/\/events\/2026-01-/);
+  const januaryEventId = page.url().split("/").pop()!;
 
   await page.goto("/events/new");
   await page.fill('input[name="date"]', "2026-02-20");
@@ -65,14 +67,15 @@ test("E2E-041: レポートを年度・月でフィルタする", async ({ page 
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
   await page.waitForURL(/\/events\/2026-02-/);
+  const februaryEventId = page.url().split("/").pop()!;
 
   // Filter by month 1
   await page.goto("/reports?year=2026&month=1");
-  await expect(page.locator("text=1月レポート会場")).toBeVisible();
-  await expect(page.locator("text=2月レポート会場")).not.toBeVisible();
+  await expect(page.locator(`text=${januaryEventId}`)).toBeVisible();
+  await expect(page.locator(`text=${februaryEventId}`)).not.toBeVisible();
 
   // Filter by month 2
   await page.goto("/reports?year=2026&month=2");
-  await expect(page.locator("text=2月レポート会場")).toBeVisible();
-  await expect(page.locator("text=1月レポート会場")).not.toBeVisible();
+  await expect(page.locator(`text=${februaryEventId}`)).toBeVisible();
+  await expect(page.locator(`text=${januaryEventId}`)).not.toBeVisible();
 });

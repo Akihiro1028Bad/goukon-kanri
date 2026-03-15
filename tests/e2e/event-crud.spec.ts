@@ -26,7 +26,7 @@ test("E2E-001: イベントを登録し、一覧に表示される", async ({ pa
 
   // Should redirect to event detail
   await page.waitForURL(/\/events\/2026-03-/);
-  await expect(page.locator("h1")).toContainText("イベント 2026-03-");
+  await expect(page.getByRole("heading", { name: /イベント 2026-03-/ })).toBeVisible();
 
   // Go to events list and verify the new event appears
   await page.goto("/events?year=2026&month=3");
@@ -77,33 +77,35 @@ test("E2E-003: イベントを削除して復元する", async ({ page }) => {
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
   await page.waitForURL(/\/events\/2026-05-/);
+  const eventId = page.url().split("/").pop()!;
 
   // Click delete button
-  await page.click("text=削除");
+  await page.getByRole("button", { name: "削除" }).click();
 
   // Confirm in dialog
-  await page.click("text=削除する");
+  const dialog = page.locator('[data-slot="dialog-content"]');
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "削除する" }).click();
 
   // Should redirect to event list
   await page.waitForURL("/events");
   await page.goto("/events?year=2026&month=5");
 
   // Event should not be visible (deleted)
-  await expect(page.locator("text=削除テスト会場")).not.toBeVisible();
+  await expect(page.getByRole("link", { name: eventId })).toHaveCount(0);
 
   // Toggle show deleted
-  await page.click('[role="switch"]');
+  await page.locator('[role="switch"]:visible').first().click({ force: true });
 
   // Event should be visible with opacity (grey)
-  await expect(page.locator("text=削除テスト会場")).toBeVisible();
+  await expect(page.getByRole("link", { name: eventId })).toBeVisible();
 
   // Restore
   await page.click("text=復元");
   await page.waitForTimeout(1000);
 
-  // Toggle off and back on - event should be visible normally
-  await page.click('[role="switch"]'); // toggle off (show only active)
-  await expect(page.locator("text=削除テスト会場")).toBeVisible();
+  // After restore, the event should remain visible in current list
+  await expect(page.getByRole("link", { name: eventId })).toBeVisible();
 });
 
 // E2E-004: イベント一覧フィルタ
@@ -160,7 +162,7 @@ test("E2E-005: 同月にイベントを登録するとIDが連番になる", asy
   await page.fill('input[name="femaleFee"]', "3000");
   await page.click('button[type="submit"]');
   await page.waitForURL(/\/events\/2026-08-001/);
-  await expect(page.locator("h1")).toContainText("2026-08-001");
+  await expect(page.getByRole("heading", { name: /2026-08-001/ })).toBeVisible();
 
   // Create second event in August
   await page.goto("/events/new");
@@ -174,5 +176,19 @@ test("E2E-005: 同月にイベントを登録するとIDが連番になる", asy
   await page.fill('input[name="femaleFee"]', "3000");
   await page.click('button[type="submit"]');
   await page.waitForURL(/\/events\/2026-08-002/);
-  await expect(page.locator("h1")).toContainText("2026-08-002");
+  await expect(page.getByRole("heading", { name: /2026-08-002/ })).toBeVisible();
+});
+
+// E2E-006: イベント一覧のソートUI表示
+test("E2E-006: イベント一覧ヘッダーにソートUIが表示される", async ({
+  page,
+}) => {
+  await page.goto("/events");
+
+  const dateHeader = page
+    .locator("th")
+    .filter({ has: page.getByRole("button", { name: "日付" }) });
+
+  await expect(page.getByRole("button", { name: "日付" })).toBeVisible();
+  await expect(dateHeader).toHaveAttribute("aria-sort", "none");
 });

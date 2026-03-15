@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import { eventFormSchema } from "@/lib/validations";
@@ -28,7 +29,9 @@ import {
 } from "@/components/ui/select";
 import { EVENT_STATUS_LABELS } from "@/types";
 
-type EventFormValues = z.input<typeof eventFormSchema>;
+type EventFormValues = Omit<z.input<typeof eventFormSchema>, "date"> & {
+  date: string | Date;
+};
 
 type Props = {
   defaultValues?: EventFormValues & { eventId: string };
@@ -37,23 +40,37 @@ type Props = {
 export function EventForm({ defaultValues }: Props) {
   const router = useRouter();
   const isEdit = !!defaultValues;
+  const [isMounted, setIsMounted] = useState(false);
+  const formatDateInputValue = (value: unknown): string => {
+    if (typeof value === "string") {
+      return value;
+    }
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return value.toISOString().split("T")[0];
+    }
+    return "";
+  };
 
   const form = useForm<EventFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(eventFormSchema) as any,
     defaultValues: defaultValues
       ? {
-        ...defaultValues,
-        date: new Date(defaultValues.date),
-      }
+          ...defaultValues,
+          date: formatDateInputValue(defaultValues.date),
+        }
       : {
-        status: "SCHEDULED",
-        venueCost: 0,
-        matchCount: 0,
-        expectedCashback: 0,
-        actualCashback: 0,
-      },
+          status: "SCHEDULED",
+          venueCost: 0,
+          matchCount: 0,
+          expectedCashback: 0,
+          actualCashback: 0,
+        },
   });
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   async function onSubmit(values: EventFormValues) {
     const formData = new FormData();
@@ -83,6 +100,10 @@ export function EventForm({ defaultValues }: Props) {
     }
   }
 
+  if (!isMounted) {
+    return <p className="text-sm text-muted-foreground">フォームを読み込み中...</p>;
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -94,14 +115,19 @@ export function EventForm({ defaultValues }: Props) {
               <FormItem>
                 <FormLabel>日付</FormLabel>
                 <FormControl>
-                  <Input
+                  <input
                     type="date"
-                    value={
-                      field.value
-                        ? new Date(field.value).toISOString().split("T")[0]
-                        : ""
+                    name={field.name}
+                    value={formatDateInputValue(field.value)}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onInput={(e) =>
+                      field.onChange(
+                        (e.target as HTMLInputElement).value
+                      )
                     }
-                    onChange={(e) => field.onChange(new Date(e.target.value))}
+                    onBlur={field.onBlur}
+                    ref={field.ref}
+                    className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm"
                   />
                 </FormControl>
                 <FormMessage />
