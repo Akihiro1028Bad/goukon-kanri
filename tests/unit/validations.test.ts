@@ -38,7 +38,7 @@ describe("eventFormSchema", () => {
 
   // VAL-E002: Missing date → error
   it("VAL-E002: dateが未指定の場合、エラーになる", () => {
-    const { date, ...data } = validEventData;
+    const { date: _date, ...data } = validEventData;
     const result = eventFormSchema.safeParse(data);
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -49,7 +49,7 @@ describe("eventFormSchema", () => {
 
   // VAL-E003: Missing startTime → error
   it("VAL-E003: startTimeが未指定の場合、エラーになる", () => {
-    const { startTime, ...data } = validEventData;
+    const { startTime: _startTime, ...data } = validEventData;
     const result = eventFormSchema.safeParse(data);
     expect(result.success).toBe(false);
     if (!result.success) {

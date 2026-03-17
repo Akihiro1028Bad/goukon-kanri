@@ -11,6 +11,7 @@ function createPrismaClient(): PrismaClient {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { attachDatabasePool } = require("@vercel/functions");
       attachDatabasePool(pool);
     } catch {
