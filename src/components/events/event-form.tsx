@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 
 import { eventFormSchema } from "@/lib/validations";
@@ -40,7 +40,7 @@ type Props = {
 export function EventForm({ defaultValues }: Props) {
   const router = useRouter();
   const isEdit = !!defaultValues;
-  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted] = useState(true);
   const formatDateInputValue = (value: unknown): string => {
     if (typeof value === "string") {
       return value;
@@ -68,9 +68,6 @@ export function EventForm({ defaultValues }: Props) {
         },
   });
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   async function onSubmit(values: EventFormValues) {
     const formData = new FormData();

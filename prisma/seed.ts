@@ -80,7 +80,7 @@ async function main() {
   });
 
   let createdEvents = 0;
-  let createdParticipants = 0;
+  let _createdParticipants = 0;
 
   for (let month = 1; month <= 12; month++) {
     const eventsInMonth = monthEventCounts[month - 1];
@@ -137,7 +137,7 @@ async function main() {
           },
         });
 
-        createdParticipants += 1;
+        _createdParticipants += 1;
       }
     }
   }

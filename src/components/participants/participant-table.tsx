@@ -69,7 +69,7 @@ export function ParticipantTable({ participants, eventId }: Props) {
         [filteredParticipants]
     );
 
-    const selectedUnpaidIds = Object.keys(rowSelection)
+    const _selectedUnpaidIds = Object.keys(rowSelection)
         .filter((key) => rowSelection[key])
         .map((key) => filteredParticipants[Number(key)]?.id)
         .filter((id): id is number => id !== undefined);
