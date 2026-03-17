@@ -22,8 +22,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { PaymentStatusCell } from "./payment-status-cell";
 import { BulkPaymentDialog } from "./bulk-payment-dialog";
+import { ParticipantForm } from "./participant-form";
 import { GENDER_LABELS } from "@/types";
 import { deleteParticipant, restoreParticipant } from "@/actions/participant-actions";
 import { toast } from "sonner";
@@ -39,6 +46,7 @@ export function ParticipantTable({ participants, eventId }: Props) {
     const [nameFilter, setNameFilter] = useState("");
     const [showDeleted, setShowDeleted] = useState(false);
     const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+    const [editingParticipant, setEditingParticipant] = useState<Participant | null>(null);
 
     const filteredParticipants = useMemo(() => {
         let result = participants;
@@ -182,14 +190,24 @@ export function ParticipantTable({ participants, eventId }: Props) {
                     );
                 }
                 return (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(row.original.id)}
-                        className="text-xs text-destructive"
-                    >
-                        削除
-                    </Button>
+                    <div className="flex gap-1">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingParticipant(row.original)}
+                            className="text-xs"
+                        >
+                            編集
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(row.original.id)}
+                            className="text-xs text-destructive"
+                        >
+                            削除
+                        </Button>
+                    </div>
                 );
             },
         },
@@ -293,6 +311,41 @@ export function ParticipantTable({ participants, eventId }: Props) {
             <div className="text-sm text-muted-foreground">
                 {filteredParticipants.length}名を表示
             </div>
+
+            {/* 編集ダイアログ */}
+            <Dialog
+                open={editingParticipant !== null}
+                onOpenChange={(open) => {
+                    if (!open) setEditingParticipant(null);
+                }}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>参加者を編集</DialogTitle>
+                    </DialogHeader>
+                    {editingParticipant && (
+                        <ParticipantForm
+                            eventId={eventId}
+                            defaultValues={{
+                                id: editingParticipant.id,
+                                name: editingParticipant.name,
+                                gender: editingParticipant.gender,
+                                fee: editingParticipant.fee,
+                                paymentStatus: editingParticipant.paymentStatus,
+                                paymentDate: editingParticipant.paymentDate
+                                    ? new Date(editingParticipant.paymentDate)
+                                    : undefined,
+                                paymentConfirmedBy: editingParticipant.paymentConfirmedBy ?? undefined,
+                                memo: editingParticipant.memo ?? undefined,
+                            }}
+                            onSuccess={() => {
+                                setEditingParticipant(null);
+                                router.refresh();
+                            }}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

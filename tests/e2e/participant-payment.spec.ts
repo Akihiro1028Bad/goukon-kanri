@@ -150,6 +150,43 @@ test("E2E-013: 参加者を氏名で検索する", async ({ page }) => {
   await expect(page.locator("text=検索用花子")).not.toBeVisible();
 });
 
+// E2E-015: 参加者を編集する
+test("E2E-015: 参加者を編集する", async ({ page }) => {
+  const eventUrl = await createTestEvent(page);
+  await page.goto(eventUrl);
+
+  // Add a participant
+  await addParticipant(page, "編集太郎", "MALE", 6000);
+  await page.goto(eventUrl);
+
+  // Click the edit button for this participant
+  const row = page.locator("tr").filter({ hasText: "編集太郎" });
+  await row.locator("button").filter({ hasText: "編集" }).click();
+
+  // Dialog should open with prefilled values
+  await page.waitForSelector('[data-slot="dialog-content"]');
+  const dialog = page.locator('[data-slot="dialog-content"]');
+  await expect(dialog.locator('input[name="name"]')).toHaveValue("編集太郎");
+  await expect(dialog.locator('input[name="fee"]')).toHaveValue("6000");
+
+  // Update name and fee
+  await dialog.locator('input[name="name"]').clear();
+  await dialog.locator('input[name="name"]').fill("編集太郎改");
+  await dialog.locator('input[name="fee"]').clear();
+  await dialog.locator('input[name="fee"]').fill("7000");
+
+  // Submit
+  await dialog.locator('button[type="submit"]').click();
+
+  // Wait for dialog to close and table to update
+  await page.waitForTimeout(2000);
+  await page.goto(eventUrl);
+
+  // Verify updated values
+  await expect(page.locator("text=編集太郎改")).toBeVisible();
+  await expect(page.locator("text=¥7,000")).toBeVisible();
+});
+
 // E2E-014: 全横断参加者一覧
 test("E2E-014: 横断参加者一覧で氏名検索する", async ({ page }) => {
   // Create an event and add participants
