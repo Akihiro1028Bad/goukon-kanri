@@ -10,8 +10,6 @@ const eslintConfig = defineConfig([
       // TanStack Table's useReactTable is incompatible with React Compiler memoization
       // but works correctly at runtime. Suppress the warning.
       "react-hooks/incompatible-library": "off",
-      // React Compiler's setState-in-effect warning — reviewed and suppressed where needed.
-      "react-hooks/set-state-in-effect": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_", destructuredArrayIgnorePattern: "^_" },

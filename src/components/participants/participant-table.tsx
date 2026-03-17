@@ -69,11 +69,6 @@ export function ParticipantTable({ participants, eventId }: Props) {
         [filteredParticipants]
     );
 
-    const _selectedUnpaidIds = Object.keys(rowSelection)
-        .filter((key) => rowSelection[key])
-        .map((key) => filteredParticipants[Number(key)]?.id)
-        .filter((id): id is number => id !== undefined);
-
     async function handleDelete(id: number) {
         const result = await deleteParticipant(id);
         if (result.success) {
