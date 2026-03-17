@@ -384,33 +384,33 @@
 
 **Purpose**: レスポンシブ対応、パフォーマンス最適化、最終調整。
 
-- [ ] T076 レスポンシブ対応を実装する。plan.md の「レスポンシブ対応方針」に従い、以下を実装する:
+- [x] T076 レスポンシブ対応を実装する。plan.md の「レスポンシブ対応方針」に従い、以下を実装する:
   - `src/components/layout/navigation.tsx`: モバイル（< 768px）ではサイドバーを非表示にし、ハンバーガーメニュー（shadcn/ui の Sheet を使用）で開閉する
   - 全テーブルコンポーネント: モバイル・タブレットでは横スクロール可能にする（`<div className="overflow-x-auto">` でラップ）
   - Tailwind CSS のブレークポイント（`md:`, `lg:`）で切り替える
 
-- [ ] T077 [P] パフォーマンステスト用シードデータスクリプト `prisma/seed.ts` を作成する。イベント 100 件 + 参加者 1,000 名を生成するシードスクリプト。各イベントに 10 名程度の参加者を割り当て、月ごとに均等に分散させる。`npx prisma db seed` で実行できるように package.json に `prisma.seed` を追加する
+- [x] T077 [P] パフォーマンステスト用シードデータスクリプト `prisma/seed.ts` を作成する。イベント 100 件 + 参加者 1,000 名を生成するシードスクリプト。各イベントに 10 名程度の参加者を割り当て、月ごとに均等に分散させる。`npx prisma db seed` で実行できるように package.json に `prisma.seed` を追加する
 
-- [ ] T078 [P] レスポンシブテストを E2E テストファイルに追加する。test-cases.md セクション 6 の RESP-001〜RESP-006 の 6 ケースを `tests/e2e/` の既存テストファイルまたは新規ファイルに追加する。Playwright の `page.setViewportSize()` で 375px（スマホ）、768px（タブレット）、1280px（PC）の各幅をテストする
+- [x] T078 [P] レスポンシブテストを E2E テストファイルに追加する。test-cases.md セクション 6 の RESP-001〜RESP-006 の 6 ケースを `tests/e2e/` の既存テストファイルまたは新規ファイルに追加する。Playwright の `page.setViewportSize()` で 375px（スマホ）、768px（タブレット）、1280px（PC）の各幅をテストする
 
 - [ ] T079 全テストを実行して最終確認する。以下のコマンドを順番に実行し、全て PASS することを確認する:
   1. `npm run test:run` — ユニットテスト + 統合テスト
   2. `npm run test:e2e` — E2E テスト
   3. `npm run build` — 本番ビルドがエラーなく完了すること
 
-- [ ] T080 `.gitignore` を確認・更新する。以下が含まれていることを確認: `node_modules/`, `.env`, `.next/`, `prisma/*.db`, `test-results/`, `playwright-report/`。`.env.example` は Git に含める
+- [x] T080 `.gitignore` を確認・更新する。以下が含まれていることを確認: `node_modules/`, `.env`, `.next/`, `prisma/*.db`, `test-results/`, `playwright-report/`。`.env.example` は Git に含める
 
-- [ ] T081 quickstart.md の手順に従い、開発環境の構築手順が正常に完了することを検証する。README 的なドキュメントとして quickstart.md が最新であることを確認する
+- [x] T081 quickstart.md の手順に従い、開発環境の構築手順が正常に完了することを検証する。README 的なドキュメントとして quickstart.md が最新であることを確認する
 
 ### 🔍 Chrome MCP 最終動作確認
 
-- [ ] T081a Chrome DevTools MCP を使ってレスポンシブ対応の動作を確認する。以下の操作を MCP ツールで実行する:
+- [x] T081a Chrome DevTools MCP を使ってレスポンシブ対応の動作を確認する。以下の操作を MCP ツールで実行する:
   1. **スマートフォン（375px）**: `emulate` で iPhone SE サイズ（375×667）をエミュレートする。`navigate_page` で `/` にアクセスし、`take_screenshot` でサイドバーが非表示でありハンバーガーメニューが表示されていることを確認する。ハンバーガーメニューを `click` してサイドバーが開くことを確認する。`navigate_page` で `/events` にアクセスし、テーブルが横スクロール可能であることを確認する
   2. **タブレット（768px）**: `resize_page` で 768×1024 に変更する。`navigate_page` で `/` にアクセスし、`take_screenshot` でサイドバーが表示されテーブルが横スクロール可能であることを確認する
   3. **PC（1280px）**: `resize_page` で 1280×800 に変更する。`navigate_page` で `/` にアクセスし、`take_screenshot` でサイドバーとフルテーブルが並んで表示されていることを確認する
   4. 各デバイスサイズでイベント登録フォーム（`/events/new`）が正しくレイアウトされていることを確認する（フィールドの並び、ボタンの配置）
 
-- [ ] T081b Chrome DevTools MCP を使って全画面の最終確認を行う。シードデータ（T077 で生成した 100 件 + 1,000 名）がある状態で以下を確認する:
+- [x] T081b Chrome DevTools MCP を使って全画面の最終確認を行う。シードデータ（T077 で生成した 100 件 + 1,000 名）がある状態で以下を確認する:
   1. `navigate_page` で `/events` にアクセスし、`take_screenshot` で大量データでもテーブルが正常に描画されることを確認する
   2. `navigate_page` で `/`（ダッシュボード）にアクセスし、`take_screenshot` で 12 行の月別サマリーが正確に集計されていることを確認する
   3. `navigate_page` で `/reports` にアクセスし、`take_screenshot` で収支レポートが正常に表示されることを確認する

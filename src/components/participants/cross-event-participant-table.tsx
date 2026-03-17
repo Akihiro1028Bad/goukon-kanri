@@ -113,7 +113,7 @@ export function CrossEventParticipantTable({ participants, initialNameFilter = "
         className="max-w-xs"
       />
 
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

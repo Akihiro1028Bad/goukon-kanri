@@ -10,8 +10,8 @@ test("E2E-020: ダッシュボードに月別サマリーが表示される", as
   await page.goto("/");
 
   // Should show 12 months
-  await expect(page.locator("text=1月")).toBeVisible();
-  await expect(page.locator("text=12月")).toBeVisible();
+  await expect(page.getByRole("link", { name: "1月", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "12月", exact: true })).toBeVisible();
 
   // Table should exist
   await expect(page.locator("table")).toBeVisible();

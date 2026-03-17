@@ -16,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen min-w-0">
           <Navigation />
-          <main className="flex-1 p-6">{children}</main>
+          <main className="min-w-0 flex-1 p-4 pt-16 md:p-6 md:pt-6">
+            {children}
+          </main>
         </div>
         <Toaster richColors position="top-right" />
       </body>

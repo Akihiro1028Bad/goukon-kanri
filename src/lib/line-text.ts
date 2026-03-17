@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
+import { formatRemainingSlot } from "@/lib/remaining-slots";
 
 /**
  * LINE公式アカウント投稿用の募集文テキストを生成する（FR-019）
@@ -44,8 +45,8 @@ export function generateLineText(
     lines.push(`💼 対象: ${event.targetOccupation}`);
   }
 
-  const maleSlot = maleRemaining > 0 ? `男性あと${maleRemaining}名` : "男性満席";
-  const femaleSlot = femaleRemaining > 0 ? `女性あと${femaleRemaining}名` : "女性満席";
+  const maleSlot = `男性${formatRemainingSlot(maleRemaining)}`;
+  const femaleSlot = `女性${formatRemainingSlot(femaleRemaining)}`;
   lines.push(`✅ 残枠: ${maleSlot} / ${femaleSlot}`);
 
   return lines.join("\n");

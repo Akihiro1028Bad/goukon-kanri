@@ -20,6 +20,7 @@ import {
 import { EVENT_STATUS_LABELS } from "@/types";
 import { LineTextDialog } from "./line-text-dialog";
 import Link from "next/link";
+import { formatRemainingSlot } from "@/lib/remaining-slots";
 
 type EventWithParticipants = Event & {
   participants: Participant[];
@@ -115,7 +116,7 @@ export function ScheduleTable({ events }: Props) {
         const remaining = row.original.maleCapacity - count;
         return (
           <span className={remaining <= 0 ? "text-red-600 font-bold" : ""}>
-            {remaining}
+            {formatRemainingSlot(remaining)}
           </span>
         );
       },
@@ -130,7 +131,7 @@ export function ScheduleTable({ events }: Props) {
         const remaining = row.original.femaleCapacity - count;
         return (
           <span className={remaining <= 0 ? "text-red-600 font-bold" : ""}>
-            {remaining}
+            {formatRemainingSlot(remaining)}
           </span>
         );
       },
