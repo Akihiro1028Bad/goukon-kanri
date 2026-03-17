@@ -123,7 +123,9 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
                                 >
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="性別を選択" />
+                                            <SelectValue placeholder="性別を選択">
+                                                {field.value ? GENDER_LABELS[field.value as keyof typeof GENDER_LABELS] : undefined}
+                                            </SelectValue>
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
@@ -167,7 +169,9 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
                                 >
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="決済状況" />
+                                            <SelectValue placeholder="決済状況">
+                                                {field.value ? PAYMENT_STATUS_LABELS[field.value as keyof typeof PAYMENT_STATUS_LABELS] : undefined}
+                                            </SelectValue>
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>

@@ -77,7 +77,9 @@ export function EventFilters() {
                 onValueChange={(v) => updateFilter("status", v)}
             >
                 <SelectTrigger className="w-[130px]">
-                    <SelectValue placeholder="状態" />
+                    <SelectValue placeholder="状態">
+                        {selectedStatus === "all" ? "全状態" : EVENT_STATUS_LABELS[selectedStatus as keyof typeof EVENT_STATUS_LABELS]}
+                    </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">全状態</SelectItem>

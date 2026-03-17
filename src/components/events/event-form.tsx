@@ -314,7 +314,9 @@ export function EventForm({ defaultValues }: Props) {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="状態を選択" />
+                    <SelectValue placeholder="状態を選択">
+                      {field.value ? EVENT_STATUS_LABELS[field.value as keyof typeof EVENT_STATUS_LABELS] : undefined}
+                    </SelectValue>
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
