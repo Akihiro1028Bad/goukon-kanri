@@ -71,7 +71,11 @@ export function ScheduleFilters({ currentMonth, currentArea, currentStatus, area
         onValueChange={(v) => updateFilter("status", v)}
       >
         <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder="状態" />
+          <SelectValue placeholder="状態">
+            {currentStatus === "all" || !currentStatus
+              ? "全状態"
+              : { SCHEDULED: "開催予定", COMPLETED: "開催済", CANCELLED: "キャンセル" }[currentStatus]}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">全状態</SelectItem>
