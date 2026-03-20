@@ -8,7 +8,7 @@ import type { FinancialSummary } from "@/types";
  * 参加者の個別参加費は決済済み収入の計算にのみ使用する。
  */
 export function calculateEventFinancials(
-    event: { maleFee: number; femaleFee: number; venueCost: number },
+    event: { maleFee: number; femaleFee: number; venueCost: number; expectedCashback: number; actualCashback: number },
     participants: {
         gender: Gender;
         fee: number;
@@ -43,6 +43,10 @@ export function calculateEventFinancials(
     // 実現利益
     const actualProfit = paidRevenue - event.venueCost;
 
+    // CB込み利益
+    const expectedProfitWithCb = expectedProfit + event.expectedCashback;
+    const actualProfitWithCb = actualProfit + event.actualCashback;
+
     // 利益率（見込）— 小数第2位まで
     const profitRate =
         expectedRevenue > 0
@@ -60,6 +64,8 @@ export function calculateEventFinancials(
         uncollected,
         expectedProfit,
         actualProfit,
+        expectedProfitWithCb,
+        actualProfitWithCb,
         profitRate,
     };
 }

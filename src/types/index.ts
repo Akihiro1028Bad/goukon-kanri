@@ -34,6 +34,8 @@ export type FinancialSummary = {
   uncollected: number;
   expectedProfit: number;
   actualProfit: number;
+  expectedProfitWithCb: number;
+  actualProfitWithCb: number;
   profitRate: number | null;
 };
 
@@ -49,6 +51,8 @@ export type MonthlySummaryRow = {
   uncollected: number;
   expectedProfit: number;
   actualProfit: number;
+  expectedProfitWithCb: number;
+  actualProfitWithCb: number;
   profitRate: number | null;
   matchCount: number;
 };

@@ -83,6 +83,16 @@ export function MonthlySummaryTable({ year, rows }: Props) {
       cell: ({ row }) => formatCurrency(row.original.actualProfit),
     },
     {
+      accessorKey: "expectedProfitWithCb",
+      header: "見込み利益(CB込)",
+      cell: ({ row }) => formatCurrency(row.original.expectedProfitWithCb),
+    },
+    {
+      accessorKey: "actualProfitWithCb",
+      header: "実現利益(CB込)",
+      cell: ({ row }) => formatCurrency(row.original.actualProfitWithCb),
+    },
+    {
       accessorKey: "profitRate",
       header: "利益率",
       cell: ({ row }) =>

@@ -24,6 +24,8 @@ export type ReportRow = {
   uncollected: number;
   expectedProfit: number;
   actualProfit: number;
+  expectedProfitWithCb: number;
+  actualProfitWithCb: number;
   profitRate: number | null;
 };
 
@@ -139,6 +141,8 @@ export async function getReportData(options: {
       uncollected: financials.uncollected,
       expectedProfit: financials.expectedProfit,
       actualProfit: financials.actualProfit,
+      expectedProfitWithCb: financials.expectedProfitWithCb,
+      actualProfitWithCb: financials.actualProfitWithCb,
       profitRate: financials.profitRate,
     };
   });

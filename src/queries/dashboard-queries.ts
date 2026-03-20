@@ -32,6 +32,8 @@ export async function getMonthlySummary(
     uncollected: 0,
     expectedProfit: 0,
     actualProfit: 0,
+    expectedProfitWithCb: 0,
+    actualProfitWithCb: 0,
     profitRate: null,
     matchCount: 0,
   }));
@@ -52,6 +54,8 @@ export async function getMonthlySummary(
     row.uncollected += financials.uncollected;
     row.expectedProfit += financials.expectedProfit;
     row.actualProfit += financials.actualProfit;
+    row.expectedProfitWithCb += financials.expectedProfitWithCb;
+    row.actualProfitWithCb += financials.actualProfitWithCb;
   }
 
   // 月ごとの利益率を計算
