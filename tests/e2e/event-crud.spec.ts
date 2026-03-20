@@ -161,10 +161,15 @@ test("E2E-005: 同月にイベントを登録するとIDが連番になる", asy
   await page.fill('input[name="maleFee"]', "5000");
   await page.fill('input[name="femaleFee"]', "3000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-08-001/);
-  await expect(page.getByRole("heading", { name: /2026-08-001/ })).toBeVisible();
+  await page.waitForURL(/\/events\/2026-08-\d{3}$/);
 
-  // Create second event in August
+  // Capture the first event's sequential number
+  const firstUrl = page.url();
+  const firstEventId = firstUrl.split("/").pop()!; // e.g. "2026-08-003"
+  const firstSeq = parseInt(firstEventId.split("-")[2], 10);
+  await expect(page.getByRole("heading", { name: new RegExp(firstEventId) })).toBeVisible();
+
+  // Create second event in August - should get the next sequential ID
   await page.goto("/events/new");
   await page.fill('input[name="date"]', "2026-08-20");
   await page.fill('input[name="startTime"]', "19:00");
@@ -175,8 +180,12 @@ test("E2E-005: 同月にイベントを登録するとIDが連番になる", asy
   await page.fill('input[name="maleFee"]', "5000");
   await page.fill('input[name="femaleFee"]', "3000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-08-002/);
-  await expect(page.getByRole("heading", { name: /2026-08-002/ })).toBeVisible();
+
+  // Verify second event ID is exactly one higher than the first
+  const expectedSeq = String(firstSeq + 1).padStart(3, "0");
+  const expectedSecondId = `2026-08-${expectedSeq}`;
+  await page.waitForURL(new RegExp(`/events/${expectedSecondId}$`));
+  await expect(page.getByRole("heading", { name: new RegExp(expectedSecondId) })).toBeVisible();
 });
 
 // E2E-006: イベント一覧のソートUI表示
