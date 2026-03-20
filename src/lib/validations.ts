@@ -49,7 +49,6 @@ export const eventFormSchema = z.object({
     .transform((v) => v || null),
   status: z.enum(["SCHEDULED", "COMPLETED", "CANCELLED"]),
   venueCost: z.coerce.number().int().min(0).default(0),
-  matchCount: z.coerce.number().int().min(0).default(0),
   expectedCashback: z.coerce.number().int().min(0).default(0),
   actualCashback: z.coerce.number().int().min(0).default(0),
   memo: z

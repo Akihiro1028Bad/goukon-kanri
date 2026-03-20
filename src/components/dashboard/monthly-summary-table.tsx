@@ -100,10 +100,6 @@ export function MonthlySummaryTable({ year, rows }: Props) {
           ? `${row.original.profitRate.toFixed(1)}%`
           : "-",
     },
-    {
-      accessorKey: "matchCount",
-      header: "マッチング",
-    },
   ];
 
   const table = useReactTable({

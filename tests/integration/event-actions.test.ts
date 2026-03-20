@@ -25,7 +25,6 @@ function createEventFormData(overrides: Record<string, string> = {}): FormData {
     femaleFee: "4000",
     status: "SCHEDULED",
     venueCost: "0",
-    matchCount: "0",
     expectedCashback: "0",
     actualCashback: "0",
   };
@@ -258,7 +257,6 @@ describe("Event Server Actions (Integration)", () => {
       mapUrl: "https://maps.google.com/test",
       memo: "テストメモ",
       venueCost: "30000",
-      matchCount: "3",
       expectedCashback: "5000",
       actualCashback: "4500",
     });
@@ -277,7 +275,6 @@ describe("Event Server Actions (Integration)", () => {
     expect(event?.mapUrl).toBe("https://maps.google.com/test");
     expect(event?.memo).toBe("テストメモ");
     expect(event?.venueCost).toBe(30000);
-    expect(event?.matchCount).toBe(3);
     expect(event?.expectedCashback).toBe(5000);
     expect(event?.actualCashback).toBe(4500);
   });

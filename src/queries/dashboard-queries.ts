@@ -35,7 +35,6 @@ export async function getMonthlySummary(
     expectedProfitWithCb: 0,
     actualProfitWithCb: 0,
     profitRate: null,
-    matchCount: 0,
   }));
 
   for (const event of events) {
@@ -44,7 +43,6 @@ export async function getMonthlySummary(
 
     row.eventCount++;
     row.venueCost += event.venueCost;
-    row.matchCount += event.matchCount;
 
     const financials = calculateEventFinancials(event, event.participants);
     row.maleCount += financials.maleCount;

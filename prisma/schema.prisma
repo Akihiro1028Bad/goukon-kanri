@@ -61,9 +61,6 @@ model Event {
   /// 会場費（円）
   venueCost Int @default(0) @map("venue_cost")
 
-  /// マッチング成立件数
-  matchCount Int @default(0) @map("match_count")
-
   /// Food back 予定キャッシュバック額（円）
   expectedCashback Int @default(0) @map("expected_cashback")
 
