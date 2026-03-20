@@ -29,9 +29,10 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { PaymentStatusCell } from "./payment-status-cell";
+import { TaskStatusCell } from "./task-status-cell";
 import { BulkPaymentDialog } from "./bulk-payment-dialog";
 import { ParticipantForm } from "./participant-form";
-import { GENDER_LABELS } from "@/types";
+import { GENDER_LABELS, PARTICIPANT_TASK_LABELS } from "@/types";
 import { deleteParticipant, restoreParticipant } from "@/actions/participant-actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -159,6 +160,26 @@ export function ParticipantTable({ participants, eventId }: Props) {
             header: "確認者",
             cell: ({ row }) => row.original.paymentConfirmedBy ?? "-",
         },
+        ...([
+            "detailsSent",
+            "reminderSent",
+            "thankYouSent",
+        ] as const).map((taskType): ColumnDef<Participant> => ({
+            accessorKey: taskType,
+            header: PARTICIPANT_TASK_LABELS[taskType],
+            cell: ({ row }) => {
+                if (row.original.isDeleted) {
+                    return <span className="text-muted-foreground">-</span>;
+                }
+                return (
+                    <TaskStatusCell
+                        participantId={row.original.id}
+                        taskType={taskType}
+                        currentValue={row.original[taskType]}
+                    />
+                );
+            },
+        })),
         {
             accessorKey: "memo",
             header: "メモ",

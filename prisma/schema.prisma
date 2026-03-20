@@ -82,6 +82,9 @@ model Event {
   /// リレーション: 参加者（1対多）
   participants Participant[]
 
+  /// リレーション: TODO（1対多）
+  todos        EventTodo[]
+
   @@index([date, status])
   @@map("events")
 }
@@ -125,6 +128,15 @@ model Participant {
   /// メモ（自由記述）
   memo      String?
 
+  /// 詳細送信済みフラグ
+  detailsSent     Boolean @default(false) @map("details_sent")
+
+  /// リマインド送信済みフラグ
+  reminderSent    Boolean @default(false) @map("reminder_sent")
+
+  /// お礼LINE送信済みフラグ
+  thankYouSent    Boolean @default(false) @map("thank_you_sent")
+
   /// 論理削除フラグ
   isDeleted Boolean @default(false) @map("is_deleted")
 
@@ -153,4 +165,41 @@ enum PaymentStatus {
   UNPAID  // 未
 
   @@map("payment_status")
+}
+
+/// イベント単位のカスタムTODO
+model EventTodo {
+  /// 内部ID（自動採番）
+  id          Int       @id @default(autoincrement())
+
+  /// 所属イベント（外部キー）
+  eventId     String    @map("event_id")
+  event       Event     @relation(fields: [eventId], references: [eventId])
+
+  /// TODOタイトル
+  title       String
+
+  /// 完了フラグ
+  isCompleted Boolean   @default(false) @map("is_completed")
+
+  /// 完了日時
+  completedAt DateTime? @map("completed_at")
+
+  /// メモ（自由記述）
+  memo        String?
+
+  /// 並び順
+  sortOrder   Int       @default(0) @map("sort_order")
+
+  /// 論理削除フラグ
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+
+  /// 作成日時
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  /// 更新日時
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([eventId])
+  @@map("event_todos")
 }

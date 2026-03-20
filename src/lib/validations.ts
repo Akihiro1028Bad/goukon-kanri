@@ -85,6 +85,32 @@ export const participantFormSchema = z.object({
     .transform((v) => v || null),
 });
 
+/** イベントTODO作成用 */
+export const createTodoSchema = z.object({
+  title: z
+    .string()
+    .min(1, "タイトルは必須です")
+    .max(200, "200文字以内で入力してください"),
+  memo: z
+    .string()
+    .max(500)
+    .optional()
+    .transform((v) => v || null),
+});
+
+/** イベントTODO更新用 */
+export const updateTodoSchema = z.object({
+  title: z
+    .string()
+    .min(1, "タイトルは必須です")
+    .max(200, "200文字以内で入力してください"),
+  memo: z
+    .string()
+    .max(500)
+    .optional()
+    .transform((v) => v || null),
+});
+
 /** 一括決済更新用 */
 export const bulkPaymentSchema = z.object({
   participantIds: z
