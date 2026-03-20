@@ -17,6 +17,7 @@ export function generateLineText(
     femaleFee: number;
     theme: string | null;
     targetOccupation: string | null;
+    mapUrl: string | null;
   },
   currentParticipants: {
     maleCount: number;
@@ -30,24 +31,33 @@ export function generateLineText(
   const femaleRemaining = event.femaleCapacity - currentParticipants.femaleCount;
 
   const lines: string[] = [
-    `📅 ${dateStr}（${dayOfWeek}）`,
-    `⏰ ${event.startTime}〜`,
-    `📍 ${event.area} / ${event.venueName}`,
-    `👫 男性${event.maleCapacity}名 / 女性${event.femaleCapacity}名`,
-    `💰 男性 ${event.maleFee.toLocaleString()}円 / 女性 ${event.femaleFee.toLocaleString()}円`,
+    "飲み会のお知らせ",
+    "",
+    `${dateStr}（${dayOfWeek}）`,
+    `${event.startTime}〜`,
+    `${event.area} / ${event.venueName}`,
   ];
 
+  if (event.mapUrl) {
+    lines.push(event.mapUrl);
+  }
+
+  lines.push(
+    `男性${event.maleCapacity}名 / 女性${event.femaleCapacity}名`,
+    `男性 ${event.maleFee.toLocaleString()}円 / 女性 ${event.femaleFee.toLocaleString()}円`
+  );
+
   if (event.theme) {
-    lines.push(`🎯 テーマ: ${event.theme}`);
+    lines.push(`テーマ: ${event.theme}`);
   }
 
   if (event.targetOccupation) {
-    lines.push(`💼 対象: ${event.targetOccupation}`);
+    lines.push(`対象: ${event.targetOccupation}`);
   }
 
   const maleSlot = `男性${formatRemainingSlot(maleRemaining)}`;
   const femaleSlot = `女性${formatRemainingSlot(femaleRemaining)}`;
-  lines.push(`✅ 残枠: ${maleSlot} / ${femaleSlot}`);
+  lines.push(`残枠: ${maleSlot} / ${femaleSlot}`);
 
   return lines.join("\n");
 }

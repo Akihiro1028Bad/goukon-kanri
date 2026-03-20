@@ -24,6 +24,7 @@ type Props = {
     femaleFee: number;
     theme: string | null;
     targetOccupation: string | null;
+    mapUrl: string | null;
   };
   currentParticipants: {
     maleCount: number;
