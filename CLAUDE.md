@@ -241,6 +241,46 @@ specs/001-goukon-web-app/
 - **オンライン専用**: PWA / オフラインサポートはスコープ外
 - **年度 = 暦年**: 1 月〜12 月（会計年度ではない）
 
+## GitHub Actions での Issue 対応フロー
+
+`@claude` で Issue 対応を依頼された場合、以下の2段階フローで進める。
+ワークフローは `.github/workflows/claude.yml` で3つのジョブに分離されている:
+
+### ジョブ構成
+
+| ジョブ | トリガー | 権限 | 用途 |
+|--------|---------|------|------|
+| `design` | Issue 作成時 `@claude` / コメント `@claude`（実装指示以外） | contents: read | 設計提案のみ |
+| `implement` | コメント `@claude implement` / `@claude 実装して` | contents: write | 実装 + PR 作成 |
+| `pr-comment` | PR レビューコメント `@claude` | contents: write | PR 修正対応 |
+
+### Step 1: 設計・方針提案（`design` ジョブ — コードを変更しない）
+- Issue の要件を分析し、コードベースを調査する
+- 以下のフォーマットで設計提案をコメントに投稿する:
+  - **📋 要件整理**: Issue の要件を箇条書きで整理
+  - **📁 影響範囲**: 変更対象のファイル・コンポーネント一覧
+  - **🔧 変更内容**: 具体的な修正方針（コード例含む）
+  - **🧪 テスト方針**: 追加・修正するテスト（カバレッジ100%目標）
+  - **⚠️ リスク**: 潜在的な問題点・副作用
+  - **📊 工数見積**: 変更規模（S/M/L）
+- この段階ではコード変更・ブランチ作成・PR作成は行わない
+- コメント末尾で `@claude implement` / `@claude 実装して` を案内する
+
+### Step 2: 実装（`implement` ジョブ — ユーザー承認後）
+- ユーザーが `@claude implement` または `@claude 実装して` とコメントしたら実装を開始する
+- PostgreSQL テスト DB（port 5433）が自動起動される
+- TDD で進める: テスト作成 → 実装 → リファクタリング
+- 修正したファイルのテストカバレッジは100%を目標にする
+- ブランチ名: `issue-{Issue番号}-{短い説明}`
+- テスト・型チェック・Lint 全通過後に PR を作成する
+- PR 説明は日本語で、`Closes #番号` で Issue を参照する
+
+### Step 3: PR レビュー対応（`pr-comment` ジョブ）
+- PR レビューコメントで `@claude` を含むコメントに反応する
+- コード修正 → テスト確認 → コミット・プッシュを自動で行う
+
+---
+
 ## Active Technologies
 - YAML（GitHub Actions ワークフロー定義） + `anthropics/claude-code-action@v1`, Claude Code GitHub App (`https://github.com/apps/claude`) (002-claude-github-actions)
 - N/A（DB変更なし） (002-claude-github-actions)

@@ -5,18 +5,68 @@ on:
     types: [created]
   pull_request_review_comment:
     types: [created]
-  issues:
-    types: [opened, assigned]
   pull_request_review:
     types: [submitted]
+  issues:
+    types: [opened, assigned]
 
 jobs:
-  claude:
+  # ─────────────────────────────────────────────
+  # 設計フェーズ: Issue 分析 → 方針提案コメント
+  # トリガー: Issue 作成時 or @claude（実装指示以外）
+  # ─────────────────────────────────────────────
+  design:
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude'))) ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && !contains(github.event.comment.body, '@claude implement') && !contains(github.event.comment.body, '@claude 実装して'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code (設計提案)
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_tools: |
+            Read
+            Glob
+            Grep
+            Bash(git log*)
+            Bash(git diff*)
+            Bash(gh issue view*)
+            Bash(gh issue list*)
+            Bash(gh issue comment*)
+          claude_args: |
+            --max-turns 20
+            --append-system-prompt "あなたは Issue の設計レビュアーです。以下のルールに従ってください:
+
+            ## 対応ルール
+            1. Issue の要件を分析し、コードベースを調査する
+            2. 以下のフォーマットで設計提案を Issue コメントとして投稿する:
+               - **📋 要件整理**: Issue の要件を箇条書きで整理
+               - **📁 影響範囲**: 変更対象のファイル・コンポーネント一覧
+               - **🔧 変更内容**: 具体的な修正方針（コード例含む）
+               - **🧪 テスト方針**: 追加・修正するテスト（カバレッジ100%目標）
+               - **⚠️ リスク**: 潜在的な問題点・副作用
+               - **📊 工数見積**: 変更規模（S/M/L）
+            3. この段階ではコード変更・ブランチ作成・PR作成は絶対に行わない
+            4. コメントの末尾に「実装を開始するには \`@claude implement\` または \`@claude 実装して\` とコメントしてください」と案内する"
+
+  # ─────────────────────────────────────────────
+  # 実装フェーズ: ブランチ作成 → 実装 → テスト → PR
+  # トリガー: @claude implement / @claude 実装して
+  # ─────────────────────────────────────────────
+  implement:
+    if: |
+      github.event_name == 'issue_comment' && (contains(github.event.comment.body, '@claude implement') || contains(github.event.comment.body, '@claude 実装して'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,27 +74,148 @@ jobs:
       issues: write
       id-token: write
       actions: read
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: goukon_kanri_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5433/goukon_kanri_test
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5433/goukon_kanri_test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
-      - name: Run Claude Code
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Prisma
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Run Claude Code (実装)
         id: claude
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-
-          # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
             actions: read
-
           allowed_tools: |
-            Bash(git*)
-            Bash(gh issue create*)
-            Bash(gh issue list*)
-
+            Read
+            Edit
+            Write
+            Glob
+            Grep
+            Bash(git checkout -b*)
+            Bash(git add*)
+            Bash(git commit*)
+            Bash(git push*)
+            Bash(git log*)
+            Bash(git diff*)
+            Bash(git status*)
+            Bash(npm run test:run*)
+            Bash(npm run lint*)
+            Bash(npx vitest*)
+            Bash(npx prisma*)
+            Bash(npx tsc --noEmit*)
+            Bash(gh pr create*)
+            Bash(gh issue comment*)
+            Bash(gh issue view*)
           claude_args: |
-            --append-system-prompt "Issue対応時のフロー: 1) まず設計・修正方針をIssueコメントとして投稿する。コード変更は行わない。 2) ユーザーが '@claude implement' または '@claude 実装して' とコメントしたら実装を開始する。 3) 実装時はブランチを作成しPRを出す。"
+            --max-turns 50
+            --append-system-prompt "あなたは Issue の実装担当者です。以下のルールに従ってください:
 
+            ## 実装ルール
+            1. Issue の過去コメント（設計提案）を確認し、方針に沿って実装する
+            2. ブランチ名: issue-{Issue番号}-{短い説明} （例: issue-15-fix-event-validation）
+            3. TDD で進める: テスト作成 → 実装 → リファクタリング
+            4. 修正したファイルのテストカバレッジは100%を目標にする
+            5. テスト実行: npm run test:run で全テスト通過を確認
+            6. 型チェック: npx tsc --noEmit でエラーがないことを確認
+            7. Lint: npm run lint でエラーがないことを確認
+            8. 全チェック通過後、PR を作成する
+            9. PR の説明は日本語で記述し、Issue 番号を参照する（Closes #番号）
+            10. コミットメッセージは日本語で記述する
+
+            ## PR フォーマット
+            タイトル: 簡潔な変更内容（70文字以内）
+            本文:
+            - ## 概要: 変更内容の説明
+            - ## 対応 Issue: Closes #番号
+            - ## 変更内容: 箇条書き
+            - ## テスト: 追加・修正したテストの説明
+            - ## 確認事項: レビュアーに確認してほしいポイント"
+
+  # ─────────────────────────────────────────────
+  # PR レビューコメント対応
+  # トリガー: PR コメントで @claude
+  # ─────────────────────────────────────────────
+  pr-comment:
+    if: |
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: read
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Prisma
+        run: npx prisma generate
+
+      - name: Run Claude Code (PR対応)
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+          allowed_tools: |
+            Read
+            Edit
+            Write
+            Glob
+            Grep
+            Bash(git*)
+            Bash(npm run test:run*)
+            Bash(npm run lint*)
+            Bash(npx vitest*)
+            Bash(npx tsc --noEmit*)
+            Bash(gh pr*)
+          claude_args: |
+            --max-turns 30
+            --append-system-prompt "PR レビューコメントに対応してください。コード修正が必要な場合は修正し、テストが通ることを確認してからコミット・プッシュしてください。コミットメッセージは日本語で記述してください。"
