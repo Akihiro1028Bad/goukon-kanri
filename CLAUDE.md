@@ -240,3 +240,10 @@ specs/001-goukon-web-app/
 - **見込み収入の計算**: イベントの男女別標準レート × 人数（参加者個別参加費は決済済み収入にのみ使用）
 - **オンライン専用**: PWA / オフラインサポートはスコープ外
 - **年度 = 暦年**: 1 月〜12 月（会計年度ではない）
+
+## Active Technologies
+- YAML（GitHub Actions ワークフロー定義） + `anthropics/claude-code-action@v1`, Claude Code GitHub App (`https://github.com/apps/claude`) (002-claude-github-actions)
+- N/A（DB変更なし） (002-claude-github-actions)
+
+## Recent Changes
+- 002-claude-github-actions: Added YAML（GitHub Actions ワークフロー定義） + `anthropics/claude-code-action@v1`, Claude Code GitHub App (`https://github.com/apps/claude`)
