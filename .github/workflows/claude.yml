@@ -19,11 +19,11 @@ jobs:
       (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
-      issues: read
+      issues: write
       id-token: write
-      actions: read # Required for Claude to read CI results on PRs
+      actions: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,11 +40,11 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
-          # prompt: 'Update the pull request description to include a summary of changes.'
+          allowed_tools: |
+            Bash(git*)
+            Bash(gh issue create*)
+            Bash(gh issue list*)
 
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr:*)'
+          claude_args: |
+            --append-system-prompt "Issue対応時のフロー: 1) まず設計・修正方針をIssueコメントとして投稿する。コード変更は行わない。 2) ユーザーが '@claude implement' または '@claude 実装して' とコメントしたら実装を開始する。 3) 実装時はブランチを作成しPRを出す。"
 
