@@ -279,6 +279,23 @@ specs/001-goukon-web-app/
 - PR レビューコメントで `@claude` を含むコメントに反応する
 - コード修正 → テスト確認 → コミット・プッシュを自動で行う
 
+### モデル指定
+
+全ジョブで `--model` オプションによりモデルを指定できる。未指定時は `claude-sonnet-4-20250514` を使用。
+
+| エイリアス | モデルID | 用途 |
+|-----------|---------|------|
+| `opus` | claude-opus-4-20250514 | 複雑な設計・実装 |
+| `sonnet` | claude-sonnet-4-20250514 | 汎用（デフォルト） |
+| `haiku` | claude-haiku-4-5-20251001 | 軽量タスク |
+
+使用例:
+- `@claude --model opus` — Opus で設計提案
+- `@claude implement --model opus` — Opus で実装
+- `@claude implement --model haiku` — Haiku で実装
+- `@claude implement` — デフォルト（Sonnet）で実装
+- 正式モデルID の直接指定も可: `@claude --model claude-opus-4-20250514`
+
 ---
 
 ## Active Technologies

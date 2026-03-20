@@ -10,6 +10,12 @@ on:
   issues:
     types: [opened, assigned]
 
+# モデルエイリアス → 正式モデルID のマッピング
+# コメントで --model opus / sonnet / haiku と指定可能
+# 未指定時のデフォルト: claude-sonnet-4-20250514
+env:
+  DEFAULT_MODEL: "claude-sonnet-4-20250514"
+
 jobs:
   # ─────────────────────────────────────────────
   # 設計フェーズ: Issue 分析 → 方針提案コメント
@@ -25,6 +31,31 @@ jobs:
       issues: write
       id-token: write
     steps:
+      - name: Extract model from comment
+        id: model
+        run: |
+          # Issue 本文またはコメントからモデル指定を抽出
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            COMMENT_BODY="${{ github.event.issue.body }}"
+          else
+            COMMENT_BODY="${{ github.event.comment.body }}"
+          fi
+
+          # --model <name> パターンを抽出
+          MODEL_ALIAS=$(echo "$COMMENT_BODY" | grep -oP '(?<=--model\s)\S+' || echo "")
+
+          # エイリアスを正式モデルIDに変換
+          case "$MODEL_ALIAS" in
+            opus)   MODEL_ID="claude-opus-4-20250514" ;;
+            sonnet) MODEL_ID="claude-sonnet-4-20250514" ;;
+            haiku)  MODEL_ID="claude-haiku-4-5-20251001" ;;
+            "")     MODEL_ID="${DEFAULT_MODEL}" ;;
+            *)      MODEL_ID="$MODEL_ALIAS" ;;  # 正式ID直接指定も可
+          esac
+
+          echo "model_id=$MODEL_ID" >> "$GITHUB_OUTPUT"
+          echo "使用モデル: $MODEL_ID"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -36,6 +67,7 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: |
+            --model ${{ steps.model.outputs.model_id }}
             --max-turns 20
             --allowedTools "Read,Glob,Grep,Bash(git log*),Bash(git diff*),Bash(gh issue view*),Bash(gh issue list*),Bash(gh issue comment*)"
             --append-system-prompt "あなたは Issue の設計レビュアーです。以下のルールに従ってください:
@@ -84,6 +116,26 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5433/goukon_kanri_test
       DIRECT_URL: postgresql://postgres:postgres@localhost:5433/goukon_kanri_test
     steps:
+      - name: Extract model from comment
+        id: model
+        run: |
+          COMMENT_BODY="${{ github.event.comment.body }}"
+
+          # --model <name> パターンを抽出
+          MODEL_ALIAS=$(echo "$COMMENT_BODY" | grep -oP '(?<=--model\s)\S+' || echo "")
+
+          # エイリアスを正式モデルIDに変換
+          case "$MODEL_ALIAS" in
+            opus)   MODEL_ID="claude-opus-4-20250514" ;;
+            sonnet) MODEL_ID="claude-sonnet-4-20250514" ;;
+            haiku)  MODEL_ID="claude-haiku-4-5-20251001" ;;
+            "")     MODEL_ID="${DEFAULT_MODEL}" ;;
+            *)      MODEL_ID="$MODEL_ALIAS" ;;
+          esac
+
+          echo "model_id=$MODEL_ID" >> "$GITHUB_OUTPUT"
+          echo "使用モデル: $MODEL_ID"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -111,6 +163,7 @@ jobs:
           additional_permissions: |
             actions: read
           claude_args: |
+            --model ${{ steps.model.outputs.model_id }}
             --max-turns 50
             --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git checkout -b*),Bash(git add*),Bash(git commit*),Bash(git push*),Bash(git log*),Bash(git diff*),Bash(git status*),Bash(npm run test:run*),Bash(npm run lint*),Bash(npx vitest*),Bash(npx prisma*),Bash(npx tsc --noEmit*),Bash(gh pr create*),Bash(gh issue comment*),Bash(gh issue view*)"
             --append-system-prompt "あなたは Issue の実装担当者です。以下のルールに従ってください:
@@ -152,6 +205,30 @@ jobs:
       id-token: write
       actions: read
     steps:
+      - name: Extract model from comment
+        id: model
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request_review" ]; then
+            COMMENT_BODY="${{ github.event.review.body }}"
+          else
+            COMMENT_BODY="${{ github.event.comment.body }}"
+          fi
+
+          # --model <name> パターンを抽出
+          MODEL_ALIAS=$(echo "$COMMENT_BODY" | grep -oP '(?<=--model\s)\S+' || echo "")
+
+          # エイリアスを正式モデルIDに変換
+          case "$MODEL_ALIAS" in
+            opus)   MODEL_ID="claude-opus-4-20250514" ;;
+            sonnet) MODEL_ID="claude-sonnet-4-20250514" ;;
+            haiku)  MODEL_ID="claude-haiku-4-5-20251001" ;;
+            "")     MODEL_ID="${DEFAULT_MODEL}" ;;
+            *)      MODEL_ID="$MODEL_ALIAS" ;;
+          esac
+
+          echo "model_id=$MODEL_ID" >> "$GITHUB_OUTPUT"
+          echo "使用モデル: $MODEL_ID"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -177,6 +254,7 @@ jobs:
           additional_permissions: |
             actions: read
           claude_args: |
+            --model ${{ steps.model.outputs.model_id }}
             --max-turns 30
             --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git*),Bash(npm run test:run*),Bash(npm run lint*),Bash(npx vitest*),Bash(npx tsc --noEmit*),Bash(gh pr*)"
             --append-system-prompt "PR レビューコメントに対応してください。コード修正が必要な場合は修正し、テストが通ることを確認してからコミット・プッシュしてください。コミットメッセージは日本語で記述してください。"
