@@ -188,6 +188,14 @@ export function EventDetail({ event }: Props) {
                             <dd className="mt-1 text-lg font-semibold">{formatYen(event.financials.actualProfit)}</dd>
                         </div>
                         <div>
+                            <dt className="text-sm font-medium text-muted-foreground">見込み利益(CB込)</dt>
+                            <dd className="mt-1 text-lg font-semibold">{formatYen(event.financials.expectedProfitWithCb)}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-sm font-medium text-muted-foreground">実現利益(CB込)</dt>
+                            <dd className="mt-1 text-lg font-semibold">{formatYen(event.financials.actualProfitWithCb)}</dd>
+                        </div>
+                        <div>
                             <dt className="text-sm font-medium text-muted-foreground">利益率</dt>
                             <dd className="mt-1 text-lg font-semibold">
                                 {event.financials.profitRate !== null

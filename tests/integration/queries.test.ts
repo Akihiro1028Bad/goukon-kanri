@@ -228,7 +228,7 @@ describe("Participant Queries (Integration)", () => {
 
     const detail = await getEventDetail(event.eventId);
     const expected = calculateEventFinancials(
-      { maleFee: event.maleFee, femaleFee: event.femaleFee, venueCost: event.venueCost },
+      { maleFee: event.maleFee, femaleFee: event.femaleFee, venueCost: event.venueCost, expectedCashback: event.expectedCashback, actualCashback: event.actualCashback },
       participantsData
     );
 
