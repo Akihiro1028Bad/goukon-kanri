@@ -7,10 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 import { DeleteDialog } from "@/components/events/delete-dialog";
 import { ParticipantTable } from "@/components/participants/participant-table";
 import { ParticipantForm } from "@/components/participants/participant-form";
+import { DuplicateWarning } from "@/components/participants/duplicate-warning";
+import { checkDuplicates } from "@/actions/duplicate-check-actions";
 import { EVENT_STATUS_LABELS } from "@/types";
+import type { DuplicatePair } from "@/types";
 import type { EventDetail as EventDetailType } from "@/queries/event-queries";
 
 const statusVariant = {
@@ -31,6 +35,22 @@ function formatYen(amount: number): string {
 export function EventDetail({ event }: Props) {
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [showParticipantForm, setShowParticipantForm] = useState(false);
+    const [duplicates, setDuplicates] = useState<DuplicatePair[]>([]);
+    const [isChecking, setIsChecking] = useState(false);
+
+    async function handleDuplicateCheck() {
+        setIsChecking(true);
+        const result = await checkDuplicates(event.eventId);
+        if (result.success) {
+            setDuplicates(result.data.duplicates);
+            if (result.data.duplicates.length === 0) {
+                toast.success("重複は検出されませんでした");
+            }
+        } else {
+            toast.error(result.error);
+        }
+        setIsChecking(false);
+    }
 
     return (
         <div className="space-y-6">
@@ -247,16 +267,32 @@ export function EventDetail({ event }: Props) {
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle>参加者一覧</CardTitle>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setShowParticipantForm(!showParticipantForm)}
-                        >
-                            {showParticipantForm ? "フォームを閉じる" : "参加者追加"}
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleDuplicateCheck}
+                                disabled={isChecking}
+                            >
+                                {isChecking ? "チェック中..." : "重複チェック"}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowParticipantForm(!showParticipantForm)}
+                            >
+                                {showParticipantForm ? "フォームを閉じる" : "参加者追加"}
+                            </Button>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                    {/* 重複警告 */}
+                    <DuplicateWarning
+                        duplicates={duplicates}
+                        onDismiss={() => setDuplicates([])}
+                    />
+
                     {/* 参加者追加フォーム */}
                     {showParticipantForm && (
                         <div className="border rounded-lg p-4 bg-muted/30">

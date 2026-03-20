@@ -3,7 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { participantFormSchema, bulkPaymentSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
-import type { ActionResult } from "@/types";
+import { findDuplicateParticipants } from "@/queries/participant-queries";
+import type { ActionResult, DuplicatePair } from "@/types";
 
 /**
  * イベントに参加者を登録する
@@ -11,7 +12,7 @@ import type { ActionResult } from "@/types";
 export async function createParticipant(
     eventId: string,
     formData: FormData
-): Promise<ActionResult<{ id: number }>> {
+): Promise<ActionResult<{ id: number; duplicates: DuplicatePair[] }>> {
     try {
         const rawData = Object.fromEntries(formData.entries());
         const validated = participantFormSchema.safeParse(rawData);
@@ -36,10 +37,13 @@ export async function createParticipant(
             },
         });
 
+        // 参加者追加後に重複チェック（追加した参加者を含む）
+        const duplicates = await findDuplicateParticipants(eventId);
+
         revalidatePath(`/events/${eventId}`);
         revalidatePath("/participants");
 
-        return { success: true, data: { id: participant.id } };
+        return { success: true, data: { id: participant.id, duplicates } };
     } catch (error) {
         return {
             success: false,

@@ -39,6 +39,30 @@ export type FinancialSummary = {
   profitRate: number | null;
 };
 
+/** 重複ペア情報 */
+export type DuplicatePair = {
+  /** 今回のイベントの参加者名 */
+  participantA: string;
+  /** 今回のイベントの別の参加者名 */
+  participantB: string;
+  /** 一緒に参加していた過去のイベント一覧 */
+  sharedEvents: {
+    eventId: string;
+    date: Date;
+    venueName: string;
+  }[];
+};
+
+/** 重複チェック結果 */
+export type DuplicateCheckResult = {
+  /** 重複ペアの配列（空なら重複なし） */
+  duplicates: DuplicatePair[];
+  /** チェック対象のイベントID */
+  eventId: string;
+  /** チェック実行日時 */
+  checkedAt: Date;
+};
+
 /** ダッシュボード月別サマリー行 */
 export type MonthlySummaryRow = {
   month: number;

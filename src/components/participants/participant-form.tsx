@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,8 @@ import {
     createParticipant,
     updateParticipant,
 } from "@/actions/participant-actions";
+import { DuplicateWarning } from "@/components/participants/duplicate-warning";
+import type { DuplicatePair } from "@/types";
 import {
     Form,
     FormControl,
@@ -42,6 +45,7 @@ type Props = {
 export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
     const router = useRouter();
     const isEdit = !!defaultValues;
+    const [duplicates, setDuplicates] = useState<DuplicatePair[]>([]);
 
     const form = useForm<ParticipantFormValues>({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,6 +84,13 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
 
         if (result.success) {
             toast.success(isEdit ? "参加者を更新しました" : "参加者を登録しました");
+            // 新規登録時のみ重複チェック結果を表示
+            if (!isEdit && result.data && typeof result.data === "object" && "duplicates" in result.data) {
+                const data = result.data as { duplicates: DuplicatePair[] };
+                if (data.duplicates.length > 0) {
+                    setDuplicates(data.duplicates);
+                }
+            }
             form.reset();
             if (onSuccess) {
                 onSuccess();
@@ -92,7 +103,12 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
     }
 
     return (
-        <Form {...form}>
+        <>
+            <DuplicateWarning
+                duplicates={duplicates}
+                onDismiss={() => setDuplicates([])}
+            />
+            <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* 氏名 */}
@@ -259,5 +275,6 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
                 </div>
             </form>
         </Form>
+        </>
     );
 }
