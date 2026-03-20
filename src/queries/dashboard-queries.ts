@@ -38,6 +38,8 @@ export async function getMonthlySummary(
   }));
 
   for (const event of events) {
+    // date は z.coerce.date() により UTC midnight で保存されるため getUTCMonth() が正しい
+    // （date-only 文字列 "YYYY-MM-DD" は JavaScript で常に UTC midnight に変換される）
     const month = event.date.getUTCMonth(); // 0-indexed
     const row = monthlyData[month];
 
