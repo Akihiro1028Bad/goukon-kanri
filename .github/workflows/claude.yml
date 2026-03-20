@@ -35,17 +35,9 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          allowed_tools: |
-            Read
-            Glob
-            Grep
-            Bash(git log*)
-            Bash(git diff*)
-            Bash(gh issue view*)
-            Bash(gh issue list*)
-            Bash(gh issue comment*)
           claude_args: |
             --max-turns 20
+            --allowedTools "Read,Glob,Grep,Bash(git log*),Bash(git diff*),Bash(gh issue view*),Bash(gh issue list*),Bash(gh issue comment*)"
             --append-system-prompt "あなたは Issue の設計レビュアーです。以下のルールに従ってください:
 
             ## 対応ルール
@@ -118,29 +110,9 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
             actions: read
-          allowed_tools: |
-            Read
-            Edit
-            Write
-            Glob
-            Grep
-            Bash(git checkout -b*)
-            Bash(git add*)
-            Bash(git commit*)
-            Bash(git push*)
-            Bash(git log*)
-            Bash(git diff*)
-            Bash(git status*)
-            Bash(npm run test:run*)
-            Bash(npm run lint*)
-            Bash(npx vitest*)
-            Bash(npx prisma*)
-            Bash(npx tsc --noEmit*)
-            Bash(gh pr create*)
-            Bash(gh issue comment*)
-            Bash(gh issue view*)
           claude_args: |
             --max-turns 50
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git checkout -b*),Bash(git add*),Bash(git commit*),Bash(git push*),Bash(git log*),Bash(git diff*),Bash(git status*),Bash(npm run test:run*),Bash(npm run lint*),Bash(npx vitest*),Bash(npx prisma*),Bash(npx tsc --noEmit*),Bash(gh pr create*),Bash(gh issue comment*),Bash(gh issue view*)"
             --append-system-prompt "あなたは Issue の実装担当者です。以下のルールに従ってください:
 
             ## 実装ルール
@@ -204,18 +176,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
             actions: read
-          allowed_tools: |
-            Read
-            Edit
-            Write
-            Glob
-            Grep
-            Bash(git*)
-            Bash(npm run test:run*)
-            Bash(npm run lint*)
-            Bash(npx vitest*)
-            Bash(npx tsc --noEmit*)
-            Bash(gh pr*)
           claude_args: |
             --max-turns 30
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git*),Bash(npm run test:run*),Bash(npm run lint*),Bash(npx vitest*),Bash(npx tsc --noEmit*),Bash(gh pr*)"
             --append-system-prompt "PR レビューコメントに対応してください。コード修正が必要な場合は修正し、テストが通ることを確認してからコミット・プッシュしてください。コミットメッセージは日本語で記述してください。"
