@@ -35,16 +35,16 @@ export async function getMonthlySummary(
     expectedProfitWithCb: 0,
     actualProfitWithCb: 0,
     profitRate: null,
-    matchCount: 0,
   }));
 
   for (const event of events) {
+    // date は z.coerce.date() により UTC midnight で保存されるため getUTCMonth() が正しい
+    // （date-only 文字列 "YYYY-MM-DD" は JavaScript で常に UTC midnight に変換される）
     const month = event.date.getUTCMonth(); // 0-indexed
     const row = monthlyData[month];
 
     row.eventCount++;
     row.venueCost += event.venueCost;
-    row.matchCount += event.matchCount;
 
     const financials = calculateEventFinancials(event, event.participants);
     row.maleCount += financials.maleCount;

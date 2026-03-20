@@ -303,7 +303,6 @@ describe("Dashboard Queries (Integration)", () => {
       maleFee: 6000,
       femaleFee: 4000,
       venueCost: 10000,
-      matchCount: 2,
     });
     await testPrisma.participant.createMany({
       data: [
@@ -318,7 +317,6 @@ describe("Dashboard Queries (Integration)", () => {
       maleFee: 5000,
       femaleFee: 3000,
       venueCost: 8000,
-      matchCount: 1,
     });
     await testPrisma.participant.create({
       data: { eventId: event2.eventId, name: "次郎", gender: "MALE", fee: 5000, paymentStatus: "PAID" },
@@ -337,7 +335,6 @@ describe("Dashboard Queries (Integration)", () => {
     expect(feb.venueCost).toBe(10000);
     expect(feb.expectedRevenue).toBe(10000); // 6000*1 + 4000*1
     expect(feb.paidRevenue).toBe(6000);
-    expect(feb.matchCount).toBe(2);
 
     // 3月: イベント1件、男1名
     const mar = result[2]; // index 2 = 3月
@@ -345,7 +342,6 @@ describe("Dashboard Queries (Integration)", () => {
     expect(mar.eventCount).toBe(1);
     expect(mar.maleCount).toBe(1);
     expect(mar.femaleCount).toBe(0);
-    expect(mar.matchCount).toBe(1);
   });
 
   // INT-Q013: イベント0件の月は全て0・profitRateがnull
@@ -368,7 +364,6 @@ describe("Dashboard Queries (Integration)", () => {
     expect(jan.expectedRevenue).toBe(0);
     expect(jan.paidRevenue).toBe(0);
     expect(jan.profitRate).toBeNull();
-    expect(jan.matchCount).toBe(0);
   });
 
   // INT-Q014: 年度切替で異なる年のデータのみ取得
@@ -392,25 +387,6 @@ describe("Dashboard Queries (Integration)", () => {
     expect(total2026).toBe(1);
   });
 
-  // INT-Q017: マッチング件数が月別に正しく集計
-  it("INT-Q017: matchCount is correctly aggregated per month", async () => {
-    await createTestEvent({
-      eventId: "2025-03-001",
-      date: new Date("2025-03-10"),
-      matchCount: 3,
-    });
-    await createTestEvent({
-      eventId: "2025-03-002",
-      date: new Date("2025-03-20"),
-      matchCount: 5,
-    });
-
-    const result = await getMonthlySummary(2025);
-    const mar = result[2];
-
-    expect(mar.eventCount).toBe(2);
-    expect(mar.matchCount).toBe(8); // 3 + 5
-  });
 });
 
 describe("Report Queries (Integration)", () => {
@@ -550,21 +526,6 @@ describe("Edge Cases (Integration)", () => {
     const result = await getAllParticipants({ nameFilter: "田中" });
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("田中太郎");
-  });
-
-  // EDGE-012: マッチング件数0のイベント
-  it("EDGE-012: event with matchCount=0 aggregates correctly in dashboard", async () => {
-    await createTestEvent({
-      eventId: "2025-06-001",
-      date: new Date("2025-06-15"),
-      matchCount: 0,
-    });
-
-    const result = await getMonthlySummary(2025);
-    const jun = result[5]; // index 5 = 6月
-
-    expect(jun.eventCount).toBe(1);
-    expect(jun.matchCount).toBe(0);
   });
 
   // EDGE-014: 同時に複数月にイベント登録

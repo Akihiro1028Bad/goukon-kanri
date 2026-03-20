@@ -61,7 +61,6 @@ export function EventForm({ defaultValues }: Props) {
       : {
           status: "SCHEDULED",
           venueCost: 0,
-          matchCount: 0,
           expectedCashback: 0,
           actualCashback: 0,
         },
@@ -339,19 +338,6 @@ export function EventForm({ defaultValues }: Props) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>会場費（円）</FormLabel>
-                <FormControl>
-                  <Input type="number" min={0} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="matchCount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>マッチング件数</FormLabel>
                 <FormControl>
                   <Input type="number" min={0} {...field} />
                 </FormControl>

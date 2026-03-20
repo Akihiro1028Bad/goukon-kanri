@@ -54,5 +54,4 @@ export type MonthlySummaryRow = {
   expectedProfitWithCb: number;
   actualProfitWithCb: number;
   profitRate: number | null;
-  matchCount: number;
 };

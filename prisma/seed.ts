@@ -111,7 +111,6 @@ async function main() {
           targetOccupation: pick(OCCUPATIONS, createdEvents),
           status,
           venueCost: 12000 + (createdEvents % 8) * 1000,
-          matchCount: status === EventStatus.COMPLETED ? createdEvents % 4 : 0,
           expectedCashback: (createdEvents % 6) * 1000,
           actualCashback: status === EventStatus.COMPLETED ? (createdEvents % 5) * 1000 : 0,
           memo: createdEvents % 5 === 0 ? "シードデータ" : null,

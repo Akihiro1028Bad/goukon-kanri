@@ -226,10 +226,6 @@ export function EventDetail({ event }: Props) {
                             <dt className="text-sm font-medium text-muted-foreground">実際CB</dt>
                             <dd className="mt-1">{formatYen(event.actualCashback)}</dd>
                         </div>
-                        <div>
-                            <dt className="text-sm font-medium text-muted-foreground">マッチング件数</dt>
-                            <dd className="mt-1">{event.matchCount}件</dd>
-                        </div>
                     </dl>
                 </CardContent>
             </Card>

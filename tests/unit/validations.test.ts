@@ -202,13 +202,12 @@ describe("eventFormSchema", () => {
     }
   });
 
-  // VAL-E017: Default values (venueCost=0, matchCount=0, etc.)
-  it("VAL-E017: venueCost, matchCount, expectedCashback, actualCashbackの未指定時にデフォルト値0が適用される", () => {
+  // VAL-E017: Default values (venueCost=0, etc.)
+  it("VAL-E017: venueCost, expectedCashback, actualCashbackの未指定時にデフォルト値0が適用される", () => {
     const result = eventFormSchema.safeParse(validEventData);
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.venueCost).toBe(0);
-      expect(result.data.matchCount).toBe(0);
       expect(result.data.expectedCashback).toBe(0);
       expect(result.data.actualCashback).toBe(0);
     }

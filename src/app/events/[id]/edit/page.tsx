@@ -43,7 +43,6 @@ export default async function EditEventPage({ params }: Props) {
           targetOccupation: event.targetOccupation ?? undefined,
           status: event.status,
           venueCost: event.venueCost,
-          matchCount: event.matchCount,
           expectedCashback: event.expectedCashback,
           actualCashback: event.actualCashback,
           memo: event.memo ?? undefined,
