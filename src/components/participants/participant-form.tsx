@@ -11,6 +11,7 @@ import {
     createParticipant,
     updateParticipant,
 } from "@/actions/participant-actions";
+import type { DuplicatePair } from "@/types";
 import {
     Form,
     FormControl,
@@ -37,9 +38,10 @@ type Props = {
     eventId: string;
     defaultValues?: ParticipantFormValues & { id: number };
     onSuccess?: () => void;
+    onDuplicates?: (duplicates: DuplicatePair[]) => void;
 };
 
-export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
+export function ParticipantForm({ eventId, defaultValues, onSuccess, onDuplicates }: Props) {
     const router = useRouter();
     const isEdit = !!defaultValues;
 
@@ -80,6 +82,13 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
 
         if (result.success) {
             toast.success(isEdit ? "参加者を更新しました" : "参加者を登録しました");
+            // 新規登録時のみ重複チェック結果を親へ伝搬
+            if (!isEdit && result.data && typeof result.data === "object" && "duplicates" in result.data) {
+                const data = result.data as { duplicates: DuplicatePair[] };
+                if (data.duplicates.length > 0) {
+                    onDuplicates?.(data.duplicates);
+                }
+            }
             form.reset();
             if (onSuccess) {
                 onSuccess();
@@ -92,7 +101,8 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
     }
 
     return (
-        <Form {...form}>
+        <>
+            <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* 氏名 */}
@@ -259,5 +269,6 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess }: Props) {
                 </div>
             </form>
         </Form>
+        </>
     );
 }
