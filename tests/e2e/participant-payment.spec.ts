@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
 
 // Helper: create an event and return its detail page URL
 async function createTestEvent(page: import("@playwright/test").Page) {
@@ -51,6 +52,7 @@ async function addParticipant(
 }
 
 test.beforeEach(async ({ page }) => {
+  await cleanDatabase();
   await page.goto("/events");
   await page.waitForLoadState("networkidle");
 });

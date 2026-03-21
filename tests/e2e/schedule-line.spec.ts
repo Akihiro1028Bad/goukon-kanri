@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
 
 test.beforeEach(async ({ page }) => {
+  await cleanDatabase();
   await page.goto("/schedule");
   await page.waitForLoadState("networkidle");
 });

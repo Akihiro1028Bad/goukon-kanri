@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
 
-// Helper: clean test DB before each test
+// リトライ時のデータ残留を防ぐため、各テスト前にDBをクリーンアップ
 test.beforeEach(async ({ page }) => {
-  // Navigate to events to confirm app is running
+  await cleanDatabase();
   await page.goto("/events");
   await page.waitForLoadState("networkidle");
 });

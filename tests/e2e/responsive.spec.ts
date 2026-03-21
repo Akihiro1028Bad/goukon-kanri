@@ -1,4 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
+
+test.beforeEach(async () => {
+  await cleanDatabase();
+});
 
 type EventRequiredFields = {
   date: string;
