@@ -33,6 +33,7 @@ async function createTestEvent(overrides: Record<string, unknown> = {}) {
 
 describe("Event Queries (Integration)", () => {
   beforeEach(async () => {
+    await testPrisma.eventTodo.deleteMany();
     await testPrisma.participant.deleteMany();
     await testPrisma.event.deleteMany();
   });
@@ -189,6 +190,7 @@ describe("Event Queries (Integration)", () => {
 
 describe("Participant Queries (Integration)", () => {
   beforeEach(async () => {
+    await testPrisma.eventTodo.deleteMany();
     await testPrisma.participant.deleteMany();
     await testPrisma.event.deleteMany();
   });
@@ -286,6 +288,7 @@ describe("Participant Queries (Integration)", () => {
 
 describe("Dashboard Queries (Integration)", () => {
   beforeEach(async () => {
+    await testPrisma.eventTodo.deleteMany();
     await testPrisma.participant.deleteMany();
     await testPrisma.event.deleteMany();
   });
@@ -391,6 +394,7 @@ describe("Dashboard Queries (Integration)", () => {
 
 describe("Report Queries (Integration)", () => {
   beforeEach(async () => {
+    await testPrisma.eventTodo.deleteMany();
     await testPrisma.participant.deleteMany();
     await testPrisma.event.deleteMany();
   });
@@ -440,6 +444,7 @@ describe("Report Queries (Integration)", () => {
 
 describe("Edge Cases (Integration)", () => {
   beforeEach(async () => {
+    await testPrisma.eventTodo.deleteMany();
     await testPrisma.participant.deleteMany();
     await testPrisma.event.deleteMany();
   });

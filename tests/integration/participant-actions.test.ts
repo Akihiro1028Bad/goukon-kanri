@@ -63,6 +63,7 @@ describe("Participant Server Actions (Integration)", () => {
     });
 
     beforeEach(async () => {
+        await testPrisma.eventTodo.deleteMany();
         await testPrisma.participant.deleteMany();
         await testPrisma.event.deleteMany();
     });
