@@ -160,12 +160,31 @@ export async function deleteTodo(
     todoId: number
 ): Promise<ActionResult> {
     try {
-        const todo = await prisma.eventTodo.update({
+        const current = await prisma.eventTodo.findUnique({
+            where: { id: todoId },
+            select: { eventId: true, isDeleted: true },
+        });
+
+        if (!current) {
+            return {
+                success: false,
+                error: "TODOが見つかりません",
+            };
+        }
+
+        if (current.isDeleted) {
+            return {
+                success: false,
+                error: "削除済みのTODOは削除できません",
+            };
+        }
+
+        await prisma.eventTodo.update({
             where: { id: todoId },
             data: { isDeleted: true },
         });
 
-        revalidatePath(`/events/${todo.eventId}`);
+        revalidatePath(`/events/${current.eventId}`);
 
         return { success: true, data: undefined };
     } catch (error) {

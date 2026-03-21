@@ -85,8 +85,8 @@ export const participantFormSchema = z.object({
     .transform((v) => v || null),
 });
 
-/** イベントTODO作成用 */
-export const createTodoSchema = z.object({
+/** イベントTODO共通スキーマ */
+const todoSchema = z.object({
   title: z
     .string()
     .min(1, "タイトルは必須です")
@@ -98,18 +98,11 @@ export const createTodoSchema = z.object({
     .transform((v) => v || null),
 });
 
+/** イベントTODO作成用 */
+export const createTodoSchema = todoSchema;
+
 /** イベントTODO更新用 */
-export const updateTodoSchema = z.object({
-  title: z
-    .string()
-    .min(1, "タイトルは必須です")
-    .max(200, "200文字以内で入力してください"),
-  memo: z
-    .string()
-    .max(500)
-    .optional()
-    .transform((v) => v || null),
-});
+export const updateTodoSchema = todoSchema;
 
 /** 一括決済更新用 */
 export const bulkPaymentSchema = z.object({

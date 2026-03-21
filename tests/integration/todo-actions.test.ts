@@ -263,5 +263,27 @@ describe("Todo Server Actions (Integration)", () => {
     it("INT-T013: deleteTodo with non-existent ID returns error", async () => {
         const result = await deleteTodo(999999);
         expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(result.error).toBe("TODOが見つかりません");
+        }
+    });
+
+    // INT-T014: deleteTodo → 削除済みTODOを再削除するとエラー
+    it("INT-T014: deleteTodo on already-deleted todo returns error", async () => {
+        const event = await createTestEvent();
+        const createResult = await createTodo(event.eventId, createTodoFormData());
+        expect(createResult.success).toBe(true);
+
+        const todoId = createResult.success ? createResult.data.id : 0;
+        // 1回目の削除は成功
+        const firstDelete = await deleteTodo(todoId);
+        expect(firstDelete.success).toBe(true);
+
+        // 2回目の削除はエラー
+        const secondDelete = await deleteTodo(todoId);
+        expect(secondDelete.success).toBe(false);
+        if (!secondDelete.success) {
+            expect(secondDelete.error).toBe("削除済みのTODOは削除できません");
+        }
     });
 });

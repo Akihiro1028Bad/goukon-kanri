@@ -17,13 +17,7 @@ export async function cleanDatabase(): Promise<void> {
   try {
     await prisma.$connect();
 
-    // event_todos テーブルが存在しない場合もあるため、raw SQL で安全に削除
-    await prisma.$executeRawUnsafe(
-      'DELETE FROM "event_todos" WHERE TRUE'
-    ).catch(() => {
-      // テーブルが存在しない場合は無視
-    });
-
+    await prisma.eventTodo.deleteMany();
     await prisma.participant.deleteMany();
     await prisma.event.deleteMany();
   } finally {
