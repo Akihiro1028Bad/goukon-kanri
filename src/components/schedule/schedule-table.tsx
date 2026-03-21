@@ -156,6 +156,7 @@ export function ScheduleTable({ events }: Props) {
               femaleFee: row.original.femaleFee,
               theme: row.original.theme,
               targetOccupation: row.original.targetOccupation,
+              mapUrl: row.original.mapUrl,
             }}
             currentParticipants={{ maleCount, femaleCount }}
           >
