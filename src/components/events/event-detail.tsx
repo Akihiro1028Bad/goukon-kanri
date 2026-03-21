@@ -300,6 +300,7 @@ export function EventDetail({ event }: Props) {
                             <ParticipantForm
                                 eventId={event.eventId}
                                 onSuccess={() => setShowParticipantForm(false)}
+                                onDuplicates={(d) => setDuplicates(d)}
                             />
                         </div>
                     )}
