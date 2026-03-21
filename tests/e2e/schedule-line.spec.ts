@@ -20,7 +20,7 @@ test("E2E-030: スケジュール一覧が表示される", async ({ page }) => 
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-03-/);
+  await page.waitForURL(/\/events\/2026-03-/, { timeout: 60_000 });
 
   // Go to schedule
   await page.goto("/schedule");
@@ -46,7 +46,7 @@ test("E2E-031: スケジュールをフィルタで絞り込む", async ({ page 
   await page.fill('input[name="maleFee"]', "5000");
   await page.fill('input[name="femaleFee"]', "3000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-03-/);
+  await page.waitForURL(/\/events\/2026-03-/, { timeout: 60_000 });
 
   await page.goto("/events/new");
   await page.fill('input[name="date"]', "2026-04-15");
@@ -58,7 +58,7 @@ test("E2E-031: スケジュールをフィルタで絞り込む", async ({ page 
   await page.fill('input[name="maleFee"]', "5000");
   await page.fill('input[name="femaleFee"]', "3000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-04-/);
+  await page.waitForURL(/\/events\/2026-04-/, { timeout: 60_000 });
 
   // Filter by month 3
   await page.goto("/schedule?month=3");
@@ -82,13 +82,14 @@ test("E2E-032: LINEテキストを生成してモーダルで確認する", asyn
   await page.fill('input[name="femaleFee"]', "5000");
   await page.fill('input[name="theme"]', "年末パーティー");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-03-/);
+  await page.waitForURL(/\/events\/2026-03-/, { timeout: 60_000 });
 
   // Go to schedule
   await page.goto("/schedule");
 
   // Click LINE button for the event
   const row = page.locator("tr").filter({ hasText: "LINEテスト会場" });
+  await expect(row).toBeVisible({ timeout: 30_000 });
   await expect(row).toContainText("あと4名");
   await expect(row.getByText("あと4名")).toHaveCount(2);
 

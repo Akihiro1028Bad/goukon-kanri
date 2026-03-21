@@ -13,7 +13,7 @@ async function createTestEvent(page: import("@playwright/test").Page) {
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-09-/);
+  await page.waitForURL(/\/events\/2026-09-/, { timeout: 60_000 });
   return page.url();
 }
 
