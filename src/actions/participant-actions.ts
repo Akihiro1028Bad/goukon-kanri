@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { participantFormSchema, bulkPaymentSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { findDuplicateParticipants } from "@/queries/participant-queries";
-import type { ActionResult, DuplicatePair } from "@/types";
+import type { ActionResult, DuplicatePair, ParticipantTaskType } from "@/types";
 
 /**
  * イベントに参加者を登録する
@@ -170,6 +170,58 @@ export async function updatePaymentStatus(
         return {
             success: false,
             error: error instanceof Error ? error.message : "決済状況の更新に失敗しました",
+        };
+    }
+}
+
+/**
+ * 参加者のタスク状態をトグルする（detailsSent / reminderSent / thankYouSent）
+ */
+export async function toggleParticipantTask(
+    participantId: number,
+    taskType: ParticipantTaskType
+): Promise<ActionResult> {
+    try {
+        const validTaskTypes: ParticipantTaskType[] = [
+            "detailsSent",
+            "reminderSent",
+            "thankYouSent",
+        ];
+        if (!validTaskTypes.includes(taskType)) {
+            return {
+                success: false,
+                error: `無効なタスク種別です: ${taskType}`,
+            };
+        }
+
+        // 現在の値を取得してトグル
+        const current = await prisma.participant.findUnique({
+            where: { id: participantId },
+            select: { [taskType]: true, eventId: true },
+        });
+
+        if (!current) {
+            return {
+                success: false,
+                error: "参加者が見つかりません",
+            };
+        }
+
+        const currentValue = current[taskType as keyof typeof current] as boolean;
+
+        await prisma.participant.update({
+            where: { id: participantId },
+            data: { [taskType]: !currentValue },
+        });
+
+        revalidatePath(`/events/${current.eventId}`);
+        revalidatePath("/participants");
+
+        return { success: true, data: undefined };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "タスク状態の更新に失敗しました",
         };
     }
 }

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { calculateEventFinancials } from "@/lib/calculations";
-import type { Event, Participant, EventStatus } from "@prisma/client";
+import type { Event, Participant, EventTodo, EventStatus } from "@prisma/client";
 import type { FinancialSummary } from "@/types";
 
 export type EventWithSummary = Event & {
@@ -10,6 +10,7 @@ export type EventWithSummary = Event & {
 
 export type EventDetail = Event & {
   participants: Participant[];
+  todos: EventTodo[];
   financials: FinancialSummary;
 };
 
@@ -80,7 +81,7 @@ export async function getEvents(options: {
 }
 
 /**
- * イベント詳細を取得する（参加者一覧付き）
+ * イベント詳細を取得する（参加者一覧 + TODO一覧付き）
  */
 export async function getEventDetail(
   eventId: string,
@@ -92,15 +93,20 @@ export async function getEventDetail(
       participants: includeDeletedParticipants
         ? true
         : { where: { isDeleted: false } },
+      todos: {
+        where: { isDeleted: false },
+        orderBy: { sortOrder: "asc" },
+      },
     },
   });
 
   if (!event) return null;
 
-  const { participants, ...eventData } = event;
+  const { participants, todos, ...eventData } = event;
   return {
     ...eventData,
     participants,
+    todos,
     financials: calculateEventFinancials(eventData, participants),
   };
 }

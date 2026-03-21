@@ -63,6 +63,16 @@ export type DuplicateCheckResult = {
   checkedAt: Date;
 };
 
+/** 参加者タスクの種別 */
+export type ParticipantTaskType = "detailsSent" | "reminderSent" | "thankYouSent";
+
+/** 参加者タスクの日本語ラベル */
+export const PARTICIPANT_TASK_LABELS: Record<ParticipantTaskType, string> = {
+  detailsSent: "詳細送信",
+  reminderSent: "リマインド送信",
+  thankYouSent: "お礼LINE送信",
+} as const;
+
 /** ダッシュボード月別サマリー行 */
 export type MonthlySummaryRow = {
   month: number;

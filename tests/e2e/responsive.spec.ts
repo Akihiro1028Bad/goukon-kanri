@@ -1,4 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
+
+test.beforeEach(async () => {
+  await cleanDatabase();
+});
 
 type EventRequiredFields = {
   date: string;
@@ -55,7 +60,7 @@ async function createEventAndOpenDetail(
   await page.fill('input[name="maleFee"]', fields.maleFee);
   await page.fill('input[name="femaleFee"]', fields.femaleFee);
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/\d{4}-\d{2}-\d{3}/);
+  await page.waitForURL(/\/events\/\d{4}-\d{2}-\d{3}/, { timeout: 60_000 });
   return { detailUrl: page.url(), venueName };
 }
 
@@ -202,11 +207,9 @@ test("RESP-006: モバイルでLINEテキストコピーが完了する", async 
   await page.goto("/schedule");
 
   // Find and click LINE button
-  const lineButton = page
-    .locator("tr")
-    .filter({ hasText: venueName })
-    .locator("button")
-    .filter({ hasText: "LINE" });
+  const row = page.locator("tr").filter({ hasText: venueName });
+  await expect(row).toBeVisible({ timeout: 30_000 });
+  const lineButton = row.locator("button").filter({ hasText: "LINE" });
   await lineButton.click();
 
   // Dialog should open

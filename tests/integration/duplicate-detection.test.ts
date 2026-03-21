@@ -80,6 +80,7 @@ describe("Duplicate Detection (Integration)", () => {
     });
 
     beforeEach(async () => {
+        await testPrisma.eventTodo.deleteMany();
         await testPrisma.participant.deleteMany();
         await testPrisma.event.deleteMany();
         eventCounter = 0;

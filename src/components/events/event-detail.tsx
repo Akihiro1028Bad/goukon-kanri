@@ -9,12 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { DeleteDialog } from "@/components/events/delete-dialog";
+import { EventTodoList } from "@/components/events/event-todo-list";
 import { ParticipantTable } from "@/components/participants/participant-table";
 import { ParticipantForm } from "@/components/participants/participant-form";
 import { DuplicateWarning } from "@/components/participants/duplicate-warning";
 import { checkDuplicates } from "@/actions/duplicate-check-actions";
-import { EVENT_STATUS_LABELS } from "@/types";
-import type { DuplicatePair } from "@/types";
+import { EVENT_STATUS_LABELS, PARTICIPANT_TASK_LABELS } from "@/types";
+import type { DuplicatePair, ParticipantTaskType } from "@/types";
 import type { EventDetail as EventDetailType } from "@/queries/event-queries";
 
 const statusVariant = {
@@ -30,6 +31,60 @@ type Props = {
 /** 金額をカンマ区切りで表示 */
 function formatYen(amount: number): string {
     return `¥${amount.toLocaleString()}`;
+}
+
+const TASK_TYPES: ParticipantTaskType[] = [
+  "detailsSent",
+  "reminderSent",
+  "thankYouSent",
+];
+
+function TaskProgressSummary({
+  participants,
+}: {
+  participants: EventDetailType["participants"];
+}) {
+  const activeParticipants = participants.filter((p) => !p.isDeleted);
+  const total = activeParticipants.length;
+
+  if (total === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>タスク進捗</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {TASK_TYPES.map((taskType) => {
+            const completed = activeParticipants.filter(
+              (p) => p[taskType]
+            ).length;
+            const percent = total > 0 ? (completed / total) * 100 : 0;
+
+            return (
+              <div key={taskType} className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium">
+                    {PARTICIPANT_TASK_LABELS[taskType]}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {completed}/{total} 完了
+                  </span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-primary h-full rounded-full transition-all duration-300"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export function EventDetail({ event }: Props) {
@@ -261,6 +316,12 @@ export function EventDetail({ event }: Props) {
                     </CardContent>
                 </Card>
             )}
+
+            {/* タスク進捗サマリー */}
+            <TaskProgressSummary participants={event.participants} />
+
+            {/* TODOリスト */}
+            <EventTodoList eventId={event.eventId} todos={event.todos} />
 
             {/* 参加者一覧 */}
             <Card>

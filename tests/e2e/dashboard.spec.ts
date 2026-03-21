@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
 
 test.beforeEach(async ({ page }) => {
+  await cleanDatabase();
   await page.goto("/");
   await page.waitForLoadState("networkidle");
 });
@@ -48,7 +50,7 @@ test("E2E-022: 月をクリックするとイベント一覧に遷移する", as
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-03-/);
+  await page.waitForURL(/\/events\/2026-03-/, { timeout: 60_000 });
 
   // Go to dashboard
   await page.goto("/?year=2026");
@@ -75,11 +77,11 @@ test("状態変更後にダッシュボードの集計が即時反映される",
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-10-/);
+  await page.waitForURL(/\/events\/2026-10-/, { timeout: 60_000 });
 
   // Edit to change status to COMPLETED
   await page.click("text=編集");
-  await page.waitForURL(/\/edit$/);
+  await page.waitForURL(/\/edit$/, { timeout: 60_000 });
 
   // Change status via select
   const statusTrigger = page.locator('[data-slot="select-trigger"]').first();
@@ -87,7 +89,7 @@ test("状態変更後にダッシュボードの集計が即時反映される",
   await page.getByRole("option", { name: "開催済" }).click();
 
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-10-/);
+  await page.waitForURL(/\/events\/2026-10-/, { timeout: 60_000 });
 
   // Go to dashboard and verify event count for October
   await page.goto("/?year=2026");

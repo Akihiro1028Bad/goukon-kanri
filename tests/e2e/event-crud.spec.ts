@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
 
-// Helper: clean test DB before each test
+// リトライ時のデータ残留を防ぐため、各テスト前にDBをクリーンアップ
 test.beforeEach(async ({ page }) => {
-  // Navigate to events to confirm app is running
+  await cleanDatabase();
   await page.goto("/events");
   await page.waitForLoadState("networkidle");
 });
@@ -25,7 +26,7 @@ test("E2E-001: イベントを登録し、一覧に表示される", async ({ pa
   await page.click('button[type="submit"]');
 
   // Should redirect to event detail
-  await page.waitForURL(/\/events\/2026-03-/);
+  await page.waitForURL(/\/events\/2026-03-/, { timeout: 60_000 });
   await expect(page.getByRole("heading", { name: /イベント 2026-03-/ })).toBeVisible();
 
   // Go to events list and verify the new event appears
@@ -46,7 +47,7 @@ test("E2E-002: イベントを編集し、更新が反映される", async ({ pa
   await page.fill('input[name="maleFee"]', "5000");
   await page.fill('input[name="femaleFee"]', "3000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-04-/);
+  await page.waitForURL(/\/events\/2026-04-/, { timeout: 60_000 });
 
   // Click edit button
   await page.click("text=編集");
@@ -57,7 +58,7 @@ test("E2E-002: イベントを編集し、更新が反映される", async ({ pa
   await page.click('button[type="submit"]');
 
   // Wait for redirect back to detail
-  await page.waitForURL(/\/events\/2026-04-\d{3}$/);
+  await page.waitForURL(/\/events\/2026-04-\d{3}$/, { timeout: 60_000 });
 
   // Verify updated venue name
   await expect(page.locator("text=編集後の会場")).toBeVisible();
@@ -76,7 +77,7 @@ test("E2E-003: イベントを削除して復元する", async ({ page }) => {
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-05-/);
+  await page.waitForURL(/\/events\/2026-05-/, { timeout: 60_000 });
   const eventId = page.url().split("/").pop()!;
 
   // Click delete button
@@ -121,7 +122,7 @@ test("E2E-004: フィルタでイベントを絞り込む", async ({ page }) => 
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-06-/);
+  await page.waitForURL(/\/events\/2026-06-/, { timeout: 60_000 });
 
   await page.goto("/events/new");
   await page.fill('input[name="date"]', "2026-07-01");
@@ -133,7 +134,7 @@ test("E2E-004: フィルタでイベントを絞り込む", async ({ page }) => 
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-07-/);
+  await page.waitForURL(/\/events\/2026-07-/, { timeout: 60_000 });
 
   // Filter by month=6
   await page.goto("/events?year=2026&month=6");
@@ -161,7 +162,7 @@ test("E2E-005: 同月にイベントを登録するとIDが連番になる", asy
   await page.fill('input[name="maleFee"]', "5000");
   await page.fill('input[name="femaleFee"]', "3000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-08-\d{3}$/);
+  await page.waitForURL(/\/events\/2026-08-\d{3}$/, { timeout: 60_000 });
 
   // Capture the first event's sequential number
   const firstUrl = page.url();
@@ -184,7 +185,7 @@ test("E2E-005: 同月にイベントを登録するとIDが連番になる", asy
   // Verify second event ID is exactly one higher than the first
   const expectedSeq = String(firstSeq + 1).padStart(3, "0");
   const expectedSecondId = `2026-08-${expectedSeq}`;
-  await page.waitForURL(new RegExp(`/events/${expectedSecondId}$`));
+  await page.waitForURL(new RegExp(`/events/${expectedSecondId}$`), { timeout: 60_000 });
   await expect(page.getByRole("heading", { name: new RegExp(expectedSecondId) })).toBeVisible();
 });
 

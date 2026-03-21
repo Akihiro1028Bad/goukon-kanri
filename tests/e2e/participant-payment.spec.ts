@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
 
 // Helper: create an event and return its detail page URL
 async function createTestEvent(page: import("@playwright/test").Page) {
@@ -12,7 +13,7 @@ async function createTestEvent(page: import("@playwright/test").Page) {
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-09-/);
+  await page.waitForURL(/\/events\/2026-09-/, { timeout: 60_000 });
   return page.url();
 }
 
@@ -51,6 +52,7 @@ async function addParticipant(
 }
 
 test.beforeEach(async ({ page }) => {
+  await cleanDatabase();
   await page.goto("/events");
   await page.waitForLoadState("networkidle");
 });

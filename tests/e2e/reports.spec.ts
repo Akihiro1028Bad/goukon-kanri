@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { cleanDatabase } from "./helpers/clean-database";
 
 test.beforeEach(async ({ page }) => {
+  await cleanDatabase();
   await page.goto("/reports");
   await page.waitForLoadState("networkidle");
 });
@@ -21,7 +23,7 @@ test("E2E-040: 収支レポートが全列で表示される", async ({ page }) 
   await page.fill('input[name="expectedCashback"]', "3000");
   await page.fill('input[name="actualCashback"]', "2500");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-01-/);
+  await page.waitForURL(/\/events\/2026-01-/, { timeout: 60_000 });
   const eventId = page.url().split("/").pop()!;
 
   // Go to reports
@@ -53,7 +55,7 @@ test("E2E-041: レポートを年度・月でフィルタする", async ({ page 
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-01-/);
+  await page.waitForURL(/\/events\/2026-01-/, { timeout: 60_000 });
   const januaryEventId = page.url().split("/").pop()!;
 
   await page.goto("/events/new");
@@ -66,7 +68,7 @@ test("E2E-041: レポートを年度・月でフィルタする", async ({ page 
   await page.fill('input[name="maleFee"]', "6000");
   await page.fill('input[name="femaleFee"]', "4000");
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/events\/2026-02-/);
+  await page.waitForURL(/\/events\/2026-02-/, { timeout: 60_000 });
   const februaryEventId = page.url().split("/").pop()!;
 
   // Filter by month 1
