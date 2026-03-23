@@ -127,3 +127,18 @@
     @apply font-sans;
   }
 }
+
+/* テーブルスクロールインジケーター */
+.table-scroll-container {
+  @apply relative overflow-x-auto;
+}
+
+.table-scroll-container::after {
+  @apply content-[''] absolute top-0 right-0 bottom-0 w-8 pointer-events-none opacity-0 transition-opacity duration-200;
+  background: linear-gradient(to right, transparent, oklch(var(--background)));
+  will-change: opacity;
+}
+
+.table-scroll-container[data-can-scroll-right="true"]::after {
+  @apply opacity-100;
+}

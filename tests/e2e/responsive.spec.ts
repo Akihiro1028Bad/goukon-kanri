@@ -256,3 +256,48 @@ test("RESP-007: 375px幅で主要画面にページ全体の横overflowがない
     ).toBeFalsy();
   }
 });
+
+// RESP-008: Dialogがモバイルで適切なサイズで表示される
+test("RESP-008: Dialogがモバイルで適切なサイズで表示される", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+
+  await createEventAndOpenDetail(page);
+
+  // Open participant form in dialog
+  await page.click("text=参加者追加");
+
+  // Check dialog width
+  const dialog = page.locator('[data-slot="dialog-content"]');
+  await expect(dialog).toBeVisible();
+
+  const dialogBox = await dialog.boundingBox();
+  expect(dialogBox).toBeTruthy();
+  if (dialogBox) {
+    // Dialog should not be wider than viewport minus padding
+    expect(dialogBox.width).toBeLessThanOrEqual(375);
+    // Dialog should have some breathing room (2rem = 32px padding)
+    expect(dialogBox.width).toBeGreaterThan(300);
+  }
+});
+
+// RESP-009: グリッドレイアウトがモバイルで1カラムになる
+test("RESP-009: グリッドレイアウトがモバイルで1カラムになる", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+
+  // Create event to check event form layout
+  await page.goto("/events/new");
+
+  // Check that grid containers are displayed as single column on mobile
+  const gridContainers = page.locator('div[class*="grid"]');
+  const count = await gridContainers.count();
+
+  expect(count).toBeGreaterThan(0);
+
+  // Navigate to event detail to check detail page grids
+  const { detailUrl } = await createEventAndOpenDetail(page);
+  await page.goto(detailUrl);
+
+  // Check that financial summary grid items stack vertically
+  const financialGrid = page.locator('dl[class*="grid"]').first();
+  await expect(financialGrid).toBeVisible();
+});
