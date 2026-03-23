@@ -104,7 +104,7 @@ export function ParticipantForm({ eventId, defaultValues, onSuccess, onDuplicate
         <>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* 氏名 */}
                     <FormField
                         control={form.control}

@@ -198,7 +198,7 @@ export function EventDetail({ event }: Props) {
                     <CardTitle>定員・参加費</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                             <dt className="text-sm font-medium text-muted-foreground">男性定員</dt>
                             <dd className="mt-1">{event.maleCapacity}名</dd>
@@ -225,7 +225,7 @@ export function EventDetail({ event }: Props) {
                     <CardTitle>収支サマリー</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <dl className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <div>
                             <dt className="text-sm font-medium text-muted-foreground">男性参加者</dt>
                             <dd className="mt-1 text-lg font-semibold">{event.financials.maleCount}名</dd>
@@ -288,7 +288,7 @@ export function EventDetail({ event }: Props) {
                     <CardTitle>運営情報</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                             <dt className="text-sm font-medium text-muted-foreground">会場費</dt>
                             <dd className="mt-1">{formatYen(event.venueCost)}</dd>

@@ -127,3 +127,37 @@
     @apply font-sans;
   }
 }
+
+/* Mobile-specific styles */
+@layer utilities {
+  /* テーブルスクロールインジケーター */
+  .table-scroll-container {
+    @apply relative overflow-x-auto;
+    scroll-behavior: smooth;
+  }
+
+  .table-scroll-container::after {
+    content: "";
+    @apply pointer-events-none absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-background/80 to-transparent opacity-0 transition-opacity duration-200;
+  }
+
+  .table-scroll-container[data-can-scroll-right="true"]::after {
+    @apply opacity-100;
+  }
+
+  /* モバイルビューでのタッチ最適化 */
+  @media (max-width: 640px) {
+    /* タップ領域の最小サイズ確保 */
+    [role="button"],
+    button,
+    a {
+      @apply min-h-[44px];
+    }
+
+    /* スクロール動作の改善 */
+    .overflow-x-auto,
+    .table-scroll-container {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}
