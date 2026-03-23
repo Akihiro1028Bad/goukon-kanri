@@ -31,7 +31,7 @@ function NavLinks({ onClick }: { onClick?: () => void }) {
           <Link
             href={item.href}
             onClick={onClick}
-            className={`block rounded px-3 py-2 text-sm ${
+            className={`block rounded px-4 py-3 text-base ${
               pathname === item.href
                 ? "bg-blue-100 font-medium text-blue-700"
                 : "text-gray-700 hover:bg-gray-100"
