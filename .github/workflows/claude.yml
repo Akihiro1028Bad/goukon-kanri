@@ -64,12 +64,13 @@ jobs:
       - name: Run Claude Code (設計提案)
         id: claude
         uses: anthropics/claude-code-action@v1
+        continue-on-error: true
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: |
             --model ${{ steps.model.outputs.model_id }}
             --max-turns 50
-            --allowedTools "Read,Glob,Grep,Bash(git log*),Bash(git diff*),Bash(gh issue view*),Bash(gh issue list*),Bash(gh issue comment*)"
+            --allowedTools "Read,Glob,Grep,TodoWrite,Bash(git*),Bash(gh*),Bash(ls*),Bash(cat*),Bash(echo*),Bash(pwd*),Bash(which*),Bash(npm*),Bash(npx*)"
             --append-system-prompt "あなたは Issue の設計レビュアーです。以下のルールに従ってください:
 
             ## 対応ルール
@@ -83,6 +84,24 @@ jobs:
                - **📊 工数見積**: 変更規模（S/M/L）
             3. この段階ではコード変更・ブランチ作成・PR作成は絶対に行わない
             4. コメントの末尾に「実装を開始するには \`@claude implement\` または \`@claude 実装して\` とコメントしてください」と案内する"
+
+      - name: Post Failure Comment on Design Phase
+        if: always() && steps.claude.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          gh issue comment "$ISSUE_NUMBER" --body "## ⚠️ 設計提案の作成が失敗しました
+
+          **実行結果**: \`${{ steps.claude.outcome }}\`
+          **実行ログ**: [$RUN_URL]($RUN_URL)
+
+          ### 次のステップ
+          1. 上記の実行ログを確認してください
+          2. Issue の内容を明確化してください
+          3. \`@claude\` とメンションして再度設計提案をリクエストしてください"
 
   # ─────────────────────────────────────────────
   # 実装フェーズ: ブランチ作成 → 実装 → テスト → PR
@@ -158,14 +177,15 @@ jobs:
       - name: Run Claude Code (実装)
         id: claude
         uses: anthropics/claude-code-action@v1
+        continue-on-error: true
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
             actions: read
           claude_args: |
             --model ${{ steps.model.outputs.model_id }}
-            --max-turns 50
-            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git checkout -b*),Bash(git add*),Bash(git commit*),Bash(git push*),Bash(git log*),Bash(git diff*),Bash(git status*),Bash(npm run test:run*),Bash(npm run lint*),Bash(npx vitest*),Bash(npx prisma*),Bash(npx tsc --noEmit*),Bash(gh pr create*),Bash(gh issue comment*),Bash(gh issue view*)"
+            --max-turns 100
+            --allowedTools "Read,Edit,Write,Glob,Grep,TodoWrite,Bash(git*),Bash(npm*),Bash(npx*),Bash(gh*),Bash(ls*),Bash(cat*),Bash(echo*),Bash(pwd*),Bash(which*)"
             --append-system-prompt "あなたは Issue の実装担当者です。以下のルールに従ってください:
 
             ## 実装ルール
@@ -188,6 +208,119 @@ jobs:
             - ## 変更内容: 箇条書き
             - ## テスト: 追加・修正したテストの説明
             - ## 確認事項: レビュアーに確認してほしいポイント"
+
+      - name: Check Claude Execution Status
+        id: check_status
+        if: always()
+        run: |
+          echo "Claude Code 実行結果: ${{ steps.claude.outcome }}"
+          if [ "${{ steps.claude.outcome }}" != "success" ]; then
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Claude Code の実行が失敗または完了しませんでした"
+          else
+            echo "status=success" >> "$GITHUB_OUTPUT"
+            echo "✅ Claude Code の実行が正常に完了しました"
+          fi
+
+      - name: Debug Info on Failure
+        if: always() && steps.claude.outcome != 'success'
+        run: |
+          echo "=== システム情報 ==="
+          echo "ディスク使用状況:"
+          df -h
+          echo ""
+          echo "メモリ使用状況:"
+          free -m
+          echo ""
+          echo "実行中のプロセス:"
+          ps aux | grep -E "(postgres|node|npm)" || true
+          echo ""
+
+          echo "=== 環境変数 ==="
+          env | grep -E "(DATABASE|NODE|NPM)" || true
+          echo ""
+
+          echo "=== Git 状態 ==="
+          git status || true
+          git branch -a || true
+          echo ""
+
+          echo "=== 最近のログ ==="
+          ls -la /tmp/*.log 2>/dev/null || echo "ログファイルなし"
+
+          echo "=== Node.js / npm バージョン ==="
+          node --version
+          npm --version
+
+          echo "=== データベース接続確認 ==="
+          pg_isready -h localhost -p 5433 -U postgres || echo "PostgreSQL接続失敗"
+
+      - name: Upload Debug Artifacts
+        if: always() && steps.claude.outcome != 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-logs-${{ github.run_id }}
+          path: |
+            /tmp/*.log
+            ./**/*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Post Failure Comment to Issue
+        if: always() && steps.claude.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          gh issue comment "$ISSUE_NUMBER" --body "## ⚠️ 実装作業が途中で失敗しました
+
+          **実行結果**: \`${{ steps.claude.outcome }}\`
+          **実行ログ**: [$RUN_URL]($RUN_URL)
+
+          ### 考えられる原因
+          - タイムアウト（最大ターン数: 100）
+          - テスト失敗
+          - 型チェックエラー
+          - Lintエラー
+          - データベース接続エラー
+          - メモリ不足
+
+          ### 次のステップ
+          1. 上記の実行ログを確認してください
+          2. 問題を特定したら、\`@claude 実装して\` で再実行してください
+          3. 必要に応じて Issue の要件を明確化してください
+
+          デバッグログは Artifacts からダウンロードできます。"
+
+      - name: Post Success Comment to Issue
+        if: always() && steps.claude.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          # 作成されたPRのURLを取得（最新のPRを取得）
+          PR_URL=$(gh pr list --limit 1 --json url --jq '.[0].url' || echo "")
+
+          if [ -n "$PR_URL" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "## ✅ 実装作業が完了しました
+
+          PR が作成されました: $PR_URL
+
+          レビューをお願いします。
+
+          **実行ログ**: [$RUN_URL]($RUN_URL)"
+          else
+            gh issue comment "$ISSUE_NUMBER" --body "## ✅ 実装作業が完了しました
+
+          実装は完了しましたが、PR URLの取得に失敗しました。
+          PRリストを確認してください。
+
+          **実行ログ**: [$RUN_URL]($RUN_URL)"
+          fi
 
   # ─────────────────────────────────────────────
   # PR レビューコメント対応
@@ -249,6 +382,7 @@ jobs:
       - name: Run Claude Code (PR対応)
         id: claude
         uses: anthropics/claude-code-action@v1
+        continue-on-error: true
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
@@ -256,5 +390,22 @@ jobs:
           claude_args: |
             --model ${{ steps.model.outputs.model_id }}
             --max-turns 30
-            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git*),Bash(npm run test:run*),Bash(npm run lint*),Bash(npx vitest*),Bash(npx tsc --noEmit*),Bash(gh pr*)"
+            --allowedTools "Read,Edit,Write,Glob,Grep,TodoWrite,Bash(git*),Bash(npm*),Bash(npx*),Bash(gh*),Bash(ls*),Bash(cat*),Bash(echo*),Bash(pwd*)"
             --append-system-prompt "PR レビューコメントに対応してください。コード修正が必要な場合は修正し、テストが通ることを確認してからコミット・プッシュしてください。コミットメッセージは日本語で記述してください。"
+
+      - name: Post Failure Comment on PR
+        if: always() && steps.claude.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          gh pr comment "$PR_NUMBER" --body "## ⚠️ PR対応が失敗しました
+
+          **実行結果**: \`${{ steps.claude.outcome }}\`
+          **実行ログ**: [$RUN_URL]($RUN_URL)
+
+          ### 次のステップ
+          1. 上記の実行ログを確認してください
+          2. 手動で修正するか、\`@claude\` とメンションして再度リクエストしてください"
