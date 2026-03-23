@@ -61,11 +61,11 @@ export function Navigation() {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger
             render={
-              <Button variant="ghost" size="sm" aria-label="メニュー" />
+              <Button variant="ghost" size="sm" aria-label="メニュー">
+                <MenuIcon className="h-5 w-5" />
+              </Button>
             }
-          >
-            <MenuIcon className="h-5 w-5" />
-          </SheetTrigger>
+          />
           <SheetContent side="left" className="w-64 p-4">
             <SheetHeader>
               <SheetTitle>合コン管理</SheetTitle>
