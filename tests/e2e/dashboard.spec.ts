@@ -95,3 +95,81 @@ test("状態変更後にダッシュボードの集計が即時反映される",
   await page.goto("/?year=2026");
   await expect(page.locator("table")).toBeVisible();
 });
+
+// E2E-023: モバイル表示でカードレイアウトが表示される
+test("E2E-023: モバイル表示でカードレイアウトが表示される", async ({
+  page,
+}) => {
+  // Set mobile viewport
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto("/");
+
+  // Desktop table should be hidden
+  await expect(page.locator("table")).toBeHidden();
+
+  // Mobile card layout should be visible
+  const cards = page.locator(".space-y-4 > div.rounded-md.border.p-4");
+  await expect(cards.first()).toBeVisible();
+
+  // Should show month link in card
+  await expect(page.getByRole("link", { name: "1月" })).toBeVisible();
+});
+
+// E2E-024: デスクトップ表示でテーブルレイアウトが表示される
+test("E2E-024: デスクトップ表示でテーブルレイアウトが表示される", async ({
+  page,
+}) => {
+  // Set desktop viewport
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+
+  // Desktop table should be visible
+  await expect(page.locator("table")).toBeVisible();
+
+  // Mobile card layout should be hidden
+  const cards = page.locator(".space-y-4 > div.rounded-md.border.p-4");
+  await expect(cards.first()).toBeHidden();
+});
+
+// E2E-025: モバイルでヘッダーが縦並びになる
+test("E2E-025: モバイルでヘッダーが縦並びになる", async ({ page }) => {
+  // Set mobile viewport
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto("/");
+
+  // Header should have flex-col class on mobile
+  const header = page.locator(".space-y-6 > div").first();
+  await expect(header).toHaveClass(/flex-col/);
+});
+
+// E2E-026: モバイルカードレイアウトで月をクリックしてイベント一覧に遷移
+test("E2E-026: モバイルカードレイアウトで月をクリックしてイベント一覧に遷移", async ({
+  page,
+}) => {
+  // Set mobile viewport
+  await page.setViewportSize({ width: 375, height: 667 });
+
+  // Create an event
+  await page.goto("/events/new");
+  await page.fill('input[name="date"]', "2026-05-01");
+  await page.fill('input[name="startTime"]', "19:00");
+  await page.fill('input[name="venueName"]', "モバイルテスト");
+  await page.fill('input[name="area"]', "渋谷");
+  await page.fill('input[name="maleCapacity"]', "3");
+  await page.fill('input[name="femaleCapacity"]', "3");
+  await page.fill('input[name="maleFee"]', "6000");
+  await page.fill('input[name="femaleFee"]', "4000");
+  await page.click('button[type="submit"]');
+  await page.waitForURL(/\/events\/2026-05-/, { timeout: 60_000 });
+
+  // Go to dashboard
+  await page.goto("/?year=2026");
+
+  // Click 5月 link in mobile card
+  const mayLink = page.locator('a[href*="/events?year=2026&month=5"]');
+  await mayLink.click();
+
+  // Should navigate to events filtered by month
+  await page.waitForURL(/\/events\?year=2026&month=5/);
+  await expect(page.locator("text=モバイルテスト")).toBeVisible();
+});
