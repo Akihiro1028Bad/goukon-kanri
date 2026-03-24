@@ -97,8 +97,8 @@ test("E2E-032: LINEテキストを生成してモーダルで確認する", asyn
   await lineButton.click();
 
   // Dialog should open with LINE text
-  await page.waitForSelector('[data-slot="dialog-content"]');
-  const dialog = page.locator('[data-slot="dialog-content"]');
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
 
   // Verify text contains key info
   await expect(dialog.locator("text=📅")).toBeVisible();

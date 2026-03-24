@@ -73,13 +73,14 @@ test("RESP-001: スマートフォンで全主要操作が完了可能", async (
   await expect(page.locator("table")).toBeVisible();
 
   // Sidebar should be hidden, hamburger visible
-  await expect(page.locator("nav.hidden")).not.toBeVisible();
+  const sidebarLinks = page.locator('nav >> role=link');
+  await expect(sidebarLinks.first()).not.toBeVisible();
   const menuButton = page.locator('button[aria-label="メニュー"]');
   await expect(menuButton).toBeVisible();
 
   // Open hamburger menu
   await menuButton.click();
-  const mobileNav = page.locator('[data-slot="sheet-content"]');
+  const mobileNav = page.getByRole('dialog');
   await expect(mobileNav.getByRole("link", { name: "イベント一覧", exact: true })).toBeVisible();
 
   // Navigate to events
@@ -96,7 +97,8 @@ test("RESP-002: タブレットで全主要操作が完了可能", async ({ page
   await expect(page.locator("table")).toBeVisible();
 
   // Sidebar should be visible at md breakpoint
-  await expect(page.locator("nav.hidden")).toBeVisible();
+  const sidebarLinks = page.locator('nav >> role=link');
+  await expect(sidebarLinks.first()).toBeVisible();
 
   // Navigate via sidebar
   await page.getByRole("link", { name: "イベント一覧", exact: true }).click();
@@ -112,7 +114,8 @@ test("RESP-003: PCで全主要操作が完了可能", async ({ page }) => {
   await expect(page.locator("table")).toBeVisible();
 
   // Sidebar visible
-  await expect(page.locator("nav.hidden")).toBeVisible();
+  const sidebarLinks = page.locator('nav >> role=link');
+  await expect(sidebarLinks.first()).toBeVisible();
 
   // Navigate through all pages
   await page.getByRole("link", { name: "イベント一覧", exact: true }).click();
@@ -141,9 +144,7 @@ test("RESP-004: モバイルで参加者登録が完了する", async ({ page })
   await page.click("text=参加者追加");
   await page.fill('input[name="name"]', "モバイル太郎");
 
-  const genderTrigger = page.locator(
-    'form:has(input[name="name"]) [data-slot="select-trigger"]'
-  ).first();
+  const genderTrigger = page.locator('form:has(input[name="name"])').getByRole('combobox').first();
   await genderTrigger.click();
   await page.getByRole("option", { name: "男性" }).click();
 
@@ -168,9 +169,7 @@ test("RESP-005: モバイルで決済更新が完了する", async ({ page }) =>
 
   await page.click("text=参加者追加");
   await page.fill('input[name="name"]', "決済モバイル太郎");
-  const genderTrigger = page.locator(
-    'form:has(input[name="name"]) [data-slot="select-trigger"]'
-  ).first();
+  const genderTrigger = page.locator('form:has(input[name="name"])').getByRole('combobox').first();
   await genderTrigger.click();
   await page.getByRole("option", { name: "男性" }).click();
   await page.fill('input[name="fee"]', "6000");
@@ -189,9 +188,8 @@ test("RESP-005: モバイルで決済更新が完了する", async ({ page }) =>
   await page.fill('input[placeholder="確認者名"]', "確認者");
   await page.click("text=確定");
 
-  await page.waitForTimeout(2000);
-  await page.goto(eventUrl);
-  await expect(page.locator("text=済").first()).toBeVisible();
+  // Wait for payment status to update
+  await expect(page.locator("text=済").first()).toBeVisible({ timeout: 10000 });
 });
 
 // RESP-006: テキストコピーがモバイルで完了
@@ -213,8 +211,8 @@ test("RESP-006: モバイルでLINEテキストコピーが完了する", async 
   await lineButton.click();
 
   // Dialog should open
-  await page.waitForSelector('[data-slot="dialog-content"]');
-  const dialog = page.locator('[data-slot="dialog-content"]');
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
   await expect(dialog.locator("text=📅")).toBeVisible();
 
   // Click copy

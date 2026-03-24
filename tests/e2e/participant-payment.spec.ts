@@ -31,9 +31,7 @@ async function addParticipant(
   await page.fill('input[name="name"]', name);
 
   // Select gender - click the trigger then the option
-  const genderTrigger = page.locator(
-    'form:has(input[name="name"]) [data-slot="select-trigger"]'
-  ).first();
+  const genderTrigger = page.locator('form:has(input[name="name"])').getByRole('combobox').first();
   await genderTrigger.click();
   const genderLabel = gender === "MALE" ? "男性" : "女性";
   await page.getByRole("option", { name: genderLabel }).click();
@@ -91,12 +89,8 @@ test("E2E-011: 個別参加者の決済状況を更新する", async ({ page }) 
   await page.fill('input[placeholder="確認者名"]', "山田");
   await page.click("text=確定");
 
-  // Wait for status to update
-  await page.waitForTimeout(2000);
-  await page.goto(eventUrl);
-
-  // Check that payment is now "済"
-  await expect(page.locator("text=済").first()).toBeVisible();
+  // Check that payment is now "済" (with timeout to wait for update)
+  await expect(page.locator("text=済").first()).toBeVisible({ timeout: 10000 });
 });
 
 // E2E-012: 一括決済更新
@@ -115,8 +109,8 @@ test("E2E-012: 一括決済で複数参加者を更新する", async ({ page }) 
   await bulkButton.click();
 
   // Dialog should open - fill confirmation
-  await page.waitForSelector('[data-slot="dialog-content"]');
-  const dialog = page.locator('[data-slot="dialog-content"]');
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
 
   // Select all participants in dialog
   const selectAllRow = dialog.locator("div").filter({ hasText: "全選択" }).first();
@@ -125,9 +119,9 @@ test("E2E-012: 一括決済で複数参加者を更新する", async ({ page }) 
   await dialog.locator('input[placeholder="確認者名を入力"]').fill("管理者");
   await dialog.locator("button").filter({ hasText: "一括更新" }).click();
 
-  // Wait and refresh
-  await page.waitForTimeout(2000);
-  await page.goto(eventUrl);
+  // Wait for dialog to close and verify both participants are paid
+  await expect(dialog).not.toBeVisible({ timeout: 10000 });
+  await expect(page.locator("button").filter({ hasText: "済" }).first()).toBeVisible({ timeout: 10000 });
 
   // Both should be paid
   const paidBadges = page.locator("button").filter({ hasText: "済" });
@@ -166,8 +160,8 @@ test("E2E-015: 参加者を編集する", async ({ page }) => {
   await row.locator("button").filter({ hasText: "編集" }).click();
 
   // Dialog should open with prefilled values
-  await page.waitForSelector('[data-slot="dialog-content"]');
-  const dialog = page.locator('[data-slot="dialog-content"]');
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
   await expect(dialog.locator('input[name="name"]')).toHaveValue("編集太郎");
   await expect(dialog.locator('input[name="fee"]')).toHaveValue("6000");
 
@@ -180,12 +174,9 @@ test("E2E-015: 参加者を編集する", async ({ page }) => {
   // Submit
   await dialog.locator('button[type="submit"]').click();
 
-  // Wait for dialog to close and table to update
-  await page.waitForTimeout(2000);
-  await page.goto(eventUrl);
-
-  // Verify updated values
-  await expect(page.locator("text=編集太郎改")).toBeVisible();
+  // Wait for dialog to close and verify updated values
+  await expect(dialog).not.toBeVisible({ timeout: 10000 });
+  await expect(page.locator("text=編集太郎改")).toBeVisible({ timeout: 10000 });
   await expect(page.locator("text=¥7,000")).toBeVisible();
 });
 
