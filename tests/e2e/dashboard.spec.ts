@@ -24,7 +24,7 @@ test("E2E-021: 年度セレクターで年を切り替える", async ({ page }) 
   await page.goto("/");
 
   // Click year selector
-  const yearTrigger = page.locator('[data-slot="select-trigger"]').first();
+  const yearTrigger = page.getByRole('combobox', { name: /年/ });
   await yearTrigger.click();
 
   // Select 2025
@@ -84,7 +84,7 @@ test("状態変更後にダッシュボードの集計が即時反映される",
   await page.waitForURL(/\/edit$/, { timeout: 60_000 });
 
   // Change status via select
-  const statusTrigger = page.locator('[data-slot="select-trigger"]').first();
+  const statusTrigger = page.getByRole('combobox').first();
   await statusTrigger.click();
   await page.getByRole("option", { name: "開催済" }).click();
 

@@ -84,19 +84,23 @@ test("E2E-003: イベントを削除して復元する", async ({ page }) => {
   await page.getByRole("button", { name: "削除" }).click();
 
   // Confirm in dialog
-  const dialog = page.locator('[data-slot="dialog-content"]');
+  const dialog = page.getByRole('alertdialog');
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "削除する" }).click();
 
+  // Wait for dialog to close before redirect
+  await expect(dialog).not.toBeVisible({ timeout: 10000 });
+
   // Should redirect to event list
-  await page.waitForURL("/events");
+  await page.waitForURL("/events", { timeout: 30000 });
   await page.goto("/events?year=2026&month=5");
 
   // Event should not be visible (deleted)
   await expect(page.getByRole("link", { name: eventId })).toHaveCount(0);
 
   // Toggle show deleted
-  await page.locator('[role="switch"]:visible').first().click({ force: true });
+  const showDeletedSwitch = page.getByRole('switch', { name: /削除済み/ });
+  await showDeletedSwitch.click();
 
   // Event should be visible with opacity (grey)
   await expect(page.getByRole("link", { name: eventId })).toBeVisible();

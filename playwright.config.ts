@@ -25,7 +25,7 @@ export default defineConfig({
     command: process.env.CI ? "npm run start" : "npm run dev",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
-    timeout: 60_000,
+    timeout: 120_000,
     env: {
       DATABASE_URL:
         "postgresql://postgres:postgres@localhost:5433/goukon_kanri_test",
